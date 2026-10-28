@@ -3,46 +3,46 @@ import userEvent from '@testing-library/user-event'
 import { expect, it } from 'vitest'
 import { OnboardingForm } from './onboarding-form'
 
+const field = (name: string) => screen.getByRole('textbox', { name })
+
 it('renders every field and the submit button', () => {
   render(<OnboardingForm />)
 
   expect(
-    screen.getByRole('heading', { name: 'Onboarding Form' }),
+    screen.getByRole('heading', { name: 'Onboarding Form', level: 1 }),
   ).toBeInTheDocument()
-  expect(screen.getByLabelText('First Name')).toHaveAttribute('maxlength', '50')
-  expect(screen.getByLabelText('Last Name')).toHaveAttribute('maxlength', '50')
-  expect(screen.getByLabelText('Phone Number')).toBeInTheDocument()
-  expect(screen.getByLabelText('Corporation Number')).toHaveAttribute(
-    'maxlength',
-    '9',
-  )
+  expect(field('First Name')).toBeInTheDocument()
+  expect(field('Last Name')).toBeInTheDocument()
+  expect(field('Phone Number')).toBeInTheDocument()
+  expect(field('Corporation Number')).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument()
 })
 
 it('limits names to 50 characters and corporation number to 9', async () => {
+  const user = userEvent.setup()
   render(<OnboardingForm />)
 
-  await userEvent.type(screen.getByLabelText('First Name'), 'a'.repeat(60))
-  await userEvent.type(
-    screen.getByLabelText('Corporation Number'),
-    '1'.repeat(12),
-  )
+  await user.type(field('First Name'), 'a'.repeat(60))
+  await user.type(field('Last Name'), 'b'.repeat(60))
+  await user.type(field('Corporation Number'), '1'.repeat(12))
 
-  expect(screen.getByLabelText('First Name')).toHaveValue('a'.repeat(50))
-  expect(screen.getByLabelText('Corporation Number')).toHaveValue('1'.repeat(9))
+  expect(field('First Name')).toHaveValue('a'.repeat(50))
+  expect(field('Last Name')).toHaveValue('b'.repeat(50))
+  expect(field('Corporation Number')).toHaveValue('1'.repeat(9))
 })
 
 it('lets the user tab through fields in order to submit', async () => {
+  const user = userEvent.setup()
   render(<OnboardingForm />)
 
-  await userEvent.click(screen.getByLabelText('First Name'))
-  await userEvent.tab()
-  expect(screen.getByLabelText('Last Name')).toHaveFocus()
-  await userEvent.tab()
-  expect(screen.getByLabelText('Phone Number')).toHaveFocus()
-  await userEvent.tab()
-  expect(screen.getByLabelText('Corporation Number')).toHaveFocus()
-  await userEvent.tab()
+  await user.click(field('First Name'))
+  await user.tab()
+  expect(field('Last Name')).toHaveFocus()
+  await user.tab()
+  expect(field('Phone Number')).toHaveFocus()
+  await user.tab()
+  expect(field('Corporation Number')).toHaveFocus()
+  await user.tab()
   expect(screen.getByRole('button', { name: 'Submit' })).toHaveFocus()
 })
 

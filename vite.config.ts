@@ -14,6 +14,19 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     globals: false,
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'src/**/*.{test,stories}.{ts,tsx}',
+        'src/components/ui/**',
+        'src/test/**',
+        'src/routeTree.gen.ts',
+        'src/main.tsx',
+        'src/router.ts',
+      ],
+      thresholds: { statements: 80, branches: 80, functions: 80, lines: 80 },
+    },
   },
   plugins: [
     tanstackRouter({
@@ -23,6 +36,7 @@ export default defineConfig({
     }),
     tailwindcss(),
     react(),
-    babel({ presets: [reactCompilerPreset()] }),
+    // Skipped under Vitest: compiler memo branches would skew coverage.
+    !process.env.VITEST && babel({ presets: [reactCompilerPreset()] }),
   ],
 });
