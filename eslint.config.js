@@ -10,7 +10,7 @@ import vitest from '@vitest/eslint-plugin'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist', 'storybook-static', 'coverage', 'src/routeTree.gen.ts']),
+  globalIgnores(['dist', 'storybook-static', 'coverage']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -31,11 +31,6 @@ export default defineConfig([
       'react-refresh/only-export-components': 'off',
       'jsx-a11y/label-has-associated-control': 'off',
     },
-  },
-  {
-    // file routes export `Route` next to their page component
-    files: ['src/routes/**'],
-    rules: { 'react-refresh/only-export-components': 'off' },
   },
   {
     files: ['**/*.test.{ts,tsx}'],

@@ -3,9 +3,6 @@ import { cleanup } from '@testing-library/react'
 import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from 'vitest'
 import { server } from './server'
 
-// jsdom does not implement scrolling; the router calls it on navigation.
-window.scrollTo = vi.fn()
-
 let consoleProblems: unknown[][] = []
 
 beforeAll(() => server.listen({ onUnhandledFrame: 'error' }))

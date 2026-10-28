@@ -1,11 +1,11 @@
-import { screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { expect, it } from 'vitest'
-import { renderRoute } from '@/test/render-route'
+import { IndexPage } from './index'
 
-it('renders the onboarding form at / inside the step shell', async () => {
-  renderRoute('/')
+it('renders the onboarding form inside the step shell', () => {
+  render(<IndexPage />)
 
-  expect(await screen.findByText('Step 1 of 5')).toBeInTheDocument()
+  expect(screen.getByText('Step 1 of 5')).toBeInTheDocument()
   expect(
     screen.getByRole('heading', { name: 'Onboarding Form' }),
   ).toBeInTheDocument()
