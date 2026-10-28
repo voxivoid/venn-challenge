@@ -11,6 +11,11 @@ Prove the feature on this branch works and its tests are worth trusting. Optiona
 Stack: Vitest + jsdom, Testing Library, `user-event`, MSW (`src/test/server.ts`), setup in
 `src/test/setup.ts`. Tests sit next to the source (`Foo.tsx` → `Foo.test.tsx`).
 
+**Every test you write or review must follow the Testing rules in `AGENTS.md`** (query
+priority, `userEvent.setup()`, behavior over markup, snapshots, MSW, helpers, hygiene).
+Read them before step 2. When you review existing tests in scope, flag and fix any that break
+those rules, even if they pass.
+
 ## 1. Scope
 
 ```bash
@@ -31,12 +36,30 @@ user. Add edge cases for each one: empty, null, boundaries, invalid input, loadi
 network failure (MSW), double submit, keyboard and accessibility.
 
 Map each item to a test and mark it **covered**, **partial** or **missing**. Write the
-missing tests: one behavior per `it()`, query by role or label, assert what the user sees.
+missing tests following the `AGENTS.md` Testing rules: one behavior per `it()`, `getByRole`
+first, `userEvent.setup()`, MSW `server.use(...)` per test for network cases, and a named
+snapshot only for decorative output.
 Then run them:
 
 ```bash
 npm test -- <changed test files>
 ```
+
+### Stories
+
+Every new or changed component under `src/components/` needs a Storybook story next to it
+(`Foo.tsx` → `Foo.stories.tsx`), including every generated `src/components/ui/` component,
+used or not. Check that each story covers the states and variants the app actually uses
+(default, error, disabled, loading, empty, long content). For `ui/` components, a default
+story is enough until the app uses more variants. Write the missing stories with typed
+`Meta`/`StoryObj` and `args`, then verify they build:
+
+```bash
+npm run build-storybook
+```
+
+Mark each component **has stories**, **partial** or **missing**. Components should be pure
+(props in, UI out) so stories need no providers or mocks; flag any that do.
 
 ## 3. Old behavior changes
 
@@ -51,7 +74,7 @@ intentional?"** Wait for an answer. Then update the tests, or revert the change.
 ## 4. Mutation testing
 
 Targets: changed, non-deleted production files in `src/` (exclude `*.test.*`, `src/test/`,
-`*.d.ts`, `src/components/ui/`). No targets → skip this step.
+`*.d.ts`, and unmodified `src/components/ui/` files; include the parts of `ui/` files we changed). No targets → skip this step.
 
 Install only the Stryker packages that are missing, and note which ones you added:
 
@@ -92,10 +115,13 @@ uninstall only the packages this run added, unless the user wants to keep them.
 ```markdown
 ## Test Feature Report — base `$TARGET`
 - Use cases: X defined, Y edge cases, all covered / gaps: …
+- Stories: X components, all have stories covering their states / gaps: …
+- Testing rules: all tests in scope follow `AGENTS.md` / violations fixed: …
+- Coverage: X% statements, Y% branches (threshold 80%)
 - Behavior changes: X changed/removed, all confirmed / pending: …
 - Mutation score: X% (killed/total), N actionable survivors left
 - Verdict: PASS / NEEDS WORK, then the remaining items
 ```
 
-Finish with `npm run typecheck && npm run lint && npm test` all green. Never commit; leave
+Finish with `npm run typecheck && npm run lint && npm run test:coverage && npm run build-storybook` all green. Never commit; leave
 that to `/commit-and-pr`.
