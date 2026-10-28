@@ -63,6 +63,10 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) (semantic commi
   - **Stories:** every component gets one, used or not, so we can see how it looks. Cover its default look plus the variants the app actually uses; add other variants when the app starts using them.
   - **Tests:** not needed for unmodified components; the integration tests of the components that use them cover them. When we modify a `ui/` component (e.g. `Button` `loading`), test what we changed.
 
+## API
+
+- Server communication lives in `src/api/`: the TanStack Query client (`query-client.ts`) and, as they are added, request functions and query/mutation hooks per resource. Components never call `fetch` directly.
+
 ## Utils and validation
 
 - Shared, framework-agnostic helpers live in `src/utils/` (`cn.ts`, ...), one concern per file, each with a colocated test.
