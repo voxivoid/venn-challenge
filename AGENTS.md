@@ -66,7 +66,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) (semantic commi
 ## API
 
 - Server communication lives in `src/api/`: the TanStack Query client (`query-client.ts`) and, as they are added, request functions and query/mutation hooks per resource. Components never call `fetch` directly.
-- Configuration comes from Vite env files (`.env.development`, `.env.production`, `.env.test`), only `VITE_`-prefixed vars reach the client. Declare each var in `src/env.d.ts` and read it through `src/api/config.ts`, never `import.meta.env` directly. Never put secrets in these files: they are committed and shipped in the bundle.
+- Configuration comes from Vite env files (`.env.development`, `.env.production`), only `VITE_`-prefixed vars reach the client. Declare each var in `src/env.d.ts` and read it through `src/api/config.ts`, never `import.meta.env` directly. Never put secrets in these files: they are committed and shipped in the bundle.
 
 ## Utils and validation
 
