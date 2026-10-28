@@ -15,8 +15,6 @@ const emptyValues: OnboardingFormValues = {
   corporationNumber: "",
 };
 
-const noop = () => {};
-
 type UseOnboardingFormOptions = {
   /** Called with the parsed values once every field is valid. */
   onSubmit?: (values: OnboardingFormValues) => void | Promise<void>;
@@ -24,7 +22,7 @@ type UseOnboardingFormOptions = {
 
 /** Wires the onboarding form: validates on blur, and on submit before calling `onSubmit`. */
 export function useOnboardingForm({
-  onSubmit = noop,
+  onSubmit,
 }: UseOnboardingFormOptions = {}): OnboardingFormProps {
   const form = useForm<OnboardingFormValues>({
     resolver: zodResolver(onboardingFormSchema),
@@ -46,7 +44,7 @@ export function useOnboardingForm({
       phone: field("phone"),
       corporationNumber: field("corporationNumber"),
     },
-    onSubmit: form.handleSubmit((values) => onSubmit(values)),
+    onSubmit: form.handleSubmit((values) => onSubmit?.(values)),
     isSubmitting,
   };
 }
