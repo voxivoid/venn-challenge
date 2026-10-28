@@ -8,7 +8,7 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist', 'storybook-static']),
+  globalIgnores(['dist', 'storybook-static', 'src/routeTree.gen.ts']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -25,6 +25,14 @@ export default defineConfig([
   {
     // shadcn-generated components export variants alongside components
     files: ['src/components/ui/**'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+      'jsx-a11y/label-has-associated-control': 'off',
+    },
+  },
+  {
+    // file routes export `Route` next to their page component
+    files: ['src/routes/**'],
     rules: { 'react-refresh/only-export-components': 'off' },
   },
   ...storybook.configs['flat/recommended'],
