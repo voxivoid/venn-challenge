@@ -25,7 +25,14 @@ git log --oneline -5
 git branch --show-current
 ```
 
-### 2. Create a branch (if on `main`)
+### 2. Test the feature
+
+If the changes touch production code in `src/`, run the `test-feature` skill first and
+follow it through to its report. Continue only if the verdict is **PASS**, or if the user
+accepts the remaining items. Commit any tests it adds together with the feature. Skip
+this step for changes that don't touch `src/` (docs, CI, config, skills).
+
+### 3. Create a branch (if on `main`)
 
 **Never commit to `main`.** If on `main`, branch from an up-to-date `main`:
 
@@ -41,7 +48,7 @@ git switch -c <type>/<short-kebab-description>
 
 One concern per branch. If the changes mix unrelated work, split them across branches.
 
-### 3. Stage and commit
+### 4. Stage and commit
 
 Stage specific files by name; avoid `git add -A` / `git add .`. Never stage `.env`,
 credentials, `node_modules/` or `dist/`.
@@ -74,11 +81,11 @@ EOF
 )"
 ```
 
-### 4. Push
+### 5. Push
 
 Not tracking → `git push -u origin <branch-name>`, otherwise `git push`.
 
-### 5. Open the pull request
+### 6. Open the pull request
 
 Check for an existing one first:
 
@@ -125,6 +132,6 @@ EOF
 )"
 ```
 
-### 6. Report
+### 7. Report
 
 Tell the user the commit hash, the PR URL, and that the PR is open and unmerged.
