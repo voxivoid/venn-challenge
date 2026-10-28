@@ -65,8 +65,10 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) (semantic commi
 
 ## API
 
-- Server communication lives in `src/api/`: the TanStack Query client (`query-client.ts`) and, as they are added, request functions and query/mutation hooks per resource. Components never call `fetch` directly.
-- Configuration comes from Vite env files (`.env.development`, `.env.production`), only `VITE_`-prefixed vars reach the client. Declare each var in `src/env.d.ts` and read it through `src/api/config.ts`, never `import.meta.env` directly. Never put secrets in these files: they are committed and shipped in the bundle.
+- Server communication lives in `src/api/`: the TanStack Query client (`query-client.ts`) plus one folder per resource (`src/api/corporation-number/`) holding its request functions and query/mutation hooks (`corporation-number.ts`) and its MSW handlers for tests (`corporation-number.handlers.ts`), so mocks change with the API they fake. Components never call `fetch` directly.
+- Each resource folder has an `index.ts` with its public surface; import from `@/api/<resource>`. The handlers file stays out of `index.ts` so MSW never reaches the app bundle.
+- Each endpoint exports its path as a constant with `:param` placeholders (`CORPORATION_NUMBER_PATH = "/corporation-number/:number"`). Build URLs with `apiUrl(path, params)` from `src/api/api-url.ts`; the MSW handler uses the same constant, so request and mock cannot drift apart.
+- Configuration comes from Vite env files (`.env.development`, `.env.production`, `.env.test` for Vitest), only `VITE_`-prefixed vars reach the client. Declare each var in `src/env.d.ts` and read it through `src/api/config.ts`, never `import.meta.env` directly. Never put secrets in these files: they are committed and shipped in the bundle.
 
 ## Utils and validation
 
@@ -120,7 +122,7 @@ Use the Testing Library priority order, highest first. Drop down only when the o
 
 ### Network
 
-- Mock HTTP with MSW only, never by stubbing `fetch`. Register handlers per test with `server.use(...)`, covering success, validation error (4xx), server error and network failure.
+- Mock HTTP with MSW only, never by stubbing `fetch`. Register handlers per test with `server.use(...)`, using the resource's handlers from `src/api/<resource>/<resource>.handlers.ts`. Build each one with `createMockHandler<ResponseType>` from `src/test/msw.ts` (a typed default reply, overridden per test with `reply`, `networkError` or `delay`), so a mock that no longer matches the API type fails typecheck. Cover success, validation error (4xx), server error and network failure.
 - Unhandled requests fail the test (`onUnhandledFrame: 'error'`); add a handler rather than loosening this.
 
 ### Helpers and data
