@@ -95,7 +95,7 @@ Use the Testing Library priority order, highest first. Drop down only when the o
 
 ### Helpers and data
 
-- Test pages through the real router with `renderRoute(path)` from `src/test/render-route.tsx` (React Router memory router); it returns `user` too.
+- Render through the app providers with helpers from `src/test/render.tsx`: `renderWithProviders(ui)` for components that need providers (TanStack Query), `renderRoute(path)` for pages through the real router. Both return `user` and a fresh `queryClient`.
 - Build test data with factories in `src/test/` (e.g. `buildProfile({ phone: '…' })`) once a shape is used by more than one test. No copy-pasted fixtures.
 
 ### Hygiene
