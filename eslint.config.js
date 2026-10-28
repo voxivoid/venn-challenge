@@ -10,7 +10,7 @@ import vitest from '@vitest/eslint-plugin'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist', 'storybook-static', 'src/routeTree.gen.ts']),
+  globalIgnores(['dist', 'storybook-static', 'coverage', 'src/routeTree.gen.ts']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
