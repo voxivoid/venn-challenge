@@ -11,6 +11,11 @@ Prove the feature on this branch works and its tests are worth trusting. Optiona
 Stack: Vitest + jsdom, Testing Library, `user-event`, MSW (`src/test/server.ts`), setup in
 `src/test/setup.ts`. Tests sit next to the source (`Foo.tsx` → `Foo.test.tsx`).
 
+**Every test you write or review must follow the Testing rules in `AGENTS.md`** (query
+priority, `userEvent.setup()`, behavior over markup, snapshots, MSW, helpers, hygiene).
+Read them before step 2. When you review existing tests in scope, flag and fix any that break
+those rules, even if they pass.
+
 ## 1. Scope
 
 ```bash
@@ -31,7 +36,9 @@ user. Add edge cases for each one: empty, null, boundaries, invalid input, loadi
 network failure (MSW), double submit, keyboard and accessibility.
 
 Map each item to a test and mark it **covered**, **partial** or **missing**. Write the
-missing tests: one behavior per `it()`, query by role or label, assert what the user sees.
+missing tests following the `AGENTS.md` Testing rules: one behavior per `it()`, `getByRole`
+first, `userEvent.setup()`, MSW `server.use(...)` per test for network cases, and a named
+snapshot only for decorative output.
 Then run them:
 
 ```bash
@@ -109,10 +116,12 @@ uninstall only the packages this run added, unless the user wants to keep them.
 ## Test Feature Report — base `$TARGET`
 - Use cases: X defined, Y edge cases, all covered / gaps: …
 - Stories: X components, all have stories covering their states / gaps: …
+- Testing rules: all tests in scope follow `AGENTS.md` / violations fixed: …
+- Coverage: X% statements, Y% branches (threshold 80%)
 - Behavior changes: X changed/removed, all confirmed / pending: …
 - Mutation score: X% (killed/total), N actionable survivors left
 - Verdict: PASS / NEEDS WORK, then the remaining items
 ```
 
-Finish with `npm run typecheck && npm run lint && npm test && npm run build-storybook` all green. Never commit; leave
+Finish with `npm run typecheck && npm run lint && npm run test:coverage && npm run build-storybook` all green. Never commit; leave
 that to `/commit-and-pr`.
