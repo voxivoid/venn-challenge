@@ -1,3 +1,4 @@
+import storybook from 'eslint-plugin-storybook'
 import js from '@eslint/js'
 import globals from 'globals'
 import jsxA11y from 'eslint-plugin-jsx-a11y'
@@ -7,7 +8,7 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', 'storybook-static']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -26,4 +27,5 @@ export default defineConfig([
     files: ['src/components/ui/**'],
     rules: { 'react-refresh/only-export-components': 'off' },
   },
+  ...storybook.configs['flat/recommended'],
 ])
