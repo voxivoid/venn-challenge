@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react-vite"
-import { Card, CardContent, CardHeader, CardTitle } from "./card"
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Card, CardContent, CardHeader, CardTitle } from "./card";
 
 const meta = {
   title: "UI/Card",
@@ -11,10 +11,10 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof Card>
+} satisfies Meta<typeof Card>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: (args) => (
@@ -25,4 +25,4 @@ export const Default: Story = {
       <CardContent>Content</CardContent>
     </Card>
   ),
-}
+};

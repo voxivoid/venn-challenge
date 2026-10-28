@@ -1,13 +1,13 @@
-import storybook from "eslint-plugin-storybook"
-import js from "@eslint/js"
-import globals from "globals"
-import jsxA11y from "eslint-plugin-jsx-a11y"
-import reactHooks from "eslint-plugin-react-hooks"
-import reactRefresh from "eslint-plugin-react-refresh"
-import tseslint from "typescript-eslint"
-import testingLibrary from "eslint-plugin-testing-library"
-import vitest from "@vitest/eslint-plugin"
-import { defineConfig, globalIgnores } from "eslint/config"
+import storybook from "eslint-plugin-storybook";
+import js from "@eslint/js";
+import globals from "globals";
+import jsxA11y from "eslint-plugin-jsx-a11y";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
+import tseslint from "typescript-eslint";
+import testingLibrary from "eslint-plugin-testing-library";
+import vitest from "@vitest/eslint-plugin";
+import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
   globalIgnores(["dist", "storybook-static", "coverage"]),
@@ -41,4 +41,4 @@ export default defineConfig([
     },
   },
   ...storybook.configs["flat/recommended"],
-])
+]);

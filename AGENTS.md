@@ -41,7 +41,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) (semantic commi
 
 ## Formatting
 
-- Prettier formats everything (config in `.prettierrc.json`: Prettier defaults, except no semicolons). Run `npm run format`; CI-style check is `npm run format:check`. The pre-commit hook formats staged files, so never hand-format or reformat unrelated files.
+- Prettier formats everything (Prettier defaults, no config file: double quotes, semicolons). Run `npm run format`; CI-style check is `npm run format:check`. The pre-commit hook formats staged files, so never hand-format or reformat unrelated files.
 - Generated code (e.g. shadcn components) is formatted like the rest; do not add it to `.prettierignore`. That file only lists build output and the lockfile.
 
 ## Dependencies

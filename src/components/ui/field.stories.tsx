@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react-vite"
-import { Input } from "./input"
-import { Field, FieldError, FieldGroup, FieldLabel } from "./field"
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Input } from "./input";
+import { Field, FieldError, FieldGroup, FieldLabel } from "./field";
 
 const meta = {
   title: "UI/Field",
@@ -12,10 +12,10 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof Field>
+} satisfies Meta<typeof Field>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: (args) => (
@@ -24,7 +24,7 @@ export const Default: Story = {
       <Input id="name" />
     </Field>
   ),
-}
+};
 
 export const WithError: Story = {
   render: (args) => (
@@ -34,7 +34,7 @@ export const WithError: Story = {
       <FieldError>Invalid Corporation Number</FieldError>
     </Field>
   ),
-}
+};
 
 export const Group: Story = {
   render: () => (
@@ -49,4 +49,4 @@ export const Group: Story = {
       </Field>
     </FieldGroup>
   ),
-}
+};
