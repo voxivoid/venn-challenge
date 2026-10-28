@@ -42,7 +42,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) (semantic commi
 ## Components
 
 - Build components as pure as possible: output depends only on props (and local UI state). No data fetching, routing, or form-library coupling inside presentational components; pass values, errors and callbacks in as props.
-- Keep side effects and state logic in custom hooks; compose them in routes (`src/routes/`) or container components.
+- Keep side effects and state logic in custom hooks; compose them in pages (`src/pages/`, wired up in `src/router.tsx`) or container components.
 - Every new component ships with a Storybook story (`Foo.stories.tsx`) covering its states (default, error, disabled, loading, etc.) and a test (`Foo.test.tsx`).
 - Generated shadcn components in `src/components/ui/`:
   - **Stories:** every component gets one, used or not, so we can see how it looks. Cover its default look plus the variants the app actually uses; add other variants when the app starts using them.
@@ -95,7 +95,7 @@ Use the Testing Library priority order, highest first. Drop down only when the o
 
 ### Helpers and data
 
-- Render routes with `renderRoute(path)` from `src/test/render-route.tsx`; it returns `user` too.
+- Test pages through the real router with `renderRoute(path)` from `src/test/render-route.tsx` (React Router memory router); it returns `user` too.
 - Build test data with factories in `src/test/` (e.g. `buildProfile({ phone: '…' })`) once a shape is used by more than one test. No copy-pasted fixtures.
 
 ### Hygiene
