@@ -38,3 +38,9 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) (semantic commi
 - Breaking changes: add `!` after the type/scope (`feat!: ...`) and/or a `BREAKING CHANGE:` footer.
 - The commit type should match the branch type (`feature/` -> `feat`, `fix/` -> `fix`, etc.).
 - Keep commits atomic: one logical change each, and the code builds and tests pass at every commit.
+
+## Components
+
+- Build components as pure as possible: output depends only on props (and local UI state). No data fetching, routing, or form-library coupling inside presentational components; pass values, errors and callbacks in as props.
+- Keep side effects and state logic in custom hooks; compose them in routes (`src/routes/`) or container components.
+- Every new component ships with a Storybook story (`Foo.stories.tsx`) covering its states (default, error, disabled, loading, etc.) and a test (`Foo.test.tsx`).

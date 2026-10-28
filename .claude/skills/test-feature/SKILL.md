@@ -38,6 +38,22 @@ Then run them:
 npm test -- <changed test files>
 ```
 
+### Stories
+
+Every new or changed component under `src/components/`, including generated `src/components/ui/`, needs a
+Storybook story next to it (`Foo.tsx` → `Foo.stories.tsx`). Check each one has a story and
+that the stories cover the states and variants the app actually uses (default, error,
+disabled, loading, empty, long content). Skip unused variants of generated `ui/` components;
+add them when the app starts using them.
+Write the missing stories with typed `Meta`/`StoryObj` and `args`, then verify they build:
+
+```bash
+npm run build-storybook
+```
+
+Mark each component **has stories**, **partial** or **missing**. Components should be pure
+(props in, UI out) so stories need no providers or mocks; flag any that do.
+
 ## 3. Old behavior changes
 
 Classify every diff hunk as **ADDED**, **CHANGED**, **REMOVED** or **REFACTOR**. For each
@@ -92,10 +108,11 @@ uninstall only the packages this run added, unless the user wants to keep them.
 ```markdown
 ## Test Feature Report — base `$TARGET`
 - Use cases: X defined, Y edge cases, all covered / gaps: …
+- Stories: X components, all have stories covering their states / gaps: …
 - Behavior changes: X changed/removed, all confirmed / pending: …
 - Mutation score: X% (killed/total), N actionable survivors left
 - Verdict: PASS / NEEDS WORK, then the remaining items
 ```
 
-Finish with `npm run typecheck && npm run lint && npm test` all green. Never commit; leave
+Finish with `npm run typecheck && npm run lint && npm test && npm run build-storybook` all green. Never commit; leave
 that to `/commit-and-pr`.
