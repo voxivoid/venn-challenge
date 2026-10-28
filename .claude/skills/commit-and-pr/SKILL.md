@@ -1,7 +1,7 @@
 ---
 name: commit-and-pr
 description: Commit with a conventional commit message, push, and open a GitHub pull request against main with a short summary and a test plan
-argument-hint: "[message hint]"
+argument-hint: '[message hint]'
 ---
 
 # Commit and Open a GitHub Pull Request
@@ -41,10 +41,10 @@ git pull --ff-only origin main
 git switch -c <type>/<short-kebab-description>
 ```
 
-| branch prefix | commit type |
-|---|---|
-| `feature/` | `feat` |
-| `fix/` `docs/` `ci/` `chore/` `refactor/` `test/` `perf/` `style/` `build/` | same name |
+| branch prefix                                                               | commit type |
+| --------------------------------------------------------------------------- | ----------- |
+| `feature/`                                                                  | `feat`      |
+| `fix/` `docs/` `ci/` `chore/` `refactor/` `test/` `perf/` `style/` `build/` | same name   |
 
 One concern per branch. If the changes mix unrelated work, split them across branches.
 

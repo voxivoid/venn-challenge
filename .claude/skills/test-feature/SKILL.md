@@ -1,7 +1,7 @@
 ---
 name: test-feature
 description: Test the feature just implemented. Covers every defined use case and edge case, flags changes to old behavior for confirmation, and runs mutation testing on changed files to prove the tests catch regressions. Use when the user wants to verify a feature or check test quality.
-argument-hint: "[path or scope hint, e.g. src/features/onboarding]"
+argument-hint: '[path or scope hint, e.g. src/features/onboarding]'
 ---
 
 # Test Feature
@@ -114,6 +114,7 @@ uninstall only the packages this run added, unless the user wants to keep them.
 
 ```markdown
 ## Test Feature Report — base `$TARGET`
+
 - Use cases: X defined, Y edge cases, all covered / gaps: …
 - Stories: X components, all have stories covering their states / gaps: …
 - Testing rules: all tests in scope follow `AGENTS.md` / violations fixed: …

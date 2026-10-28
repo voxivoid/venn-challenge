@@ -39,6 +39,11 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) (semantic commi
 - The commit type should match the branch type (`feature/` -> `feat`, `fix/` -> `fix`, etc.).
 - Keep commits atomic: one logical change each, and the code builds and tests pass at every commit.
 
+## Formatting
+
+- Prettier formats everything (config in `.prettierrc.json`: no semicolons, single quotes). Run `npm run format`; CI-style check is `npm run format:check`. The pre-commit hook formats staged files, so never hand-format or reformat unrelated files.
+- Generated code (e.g. shadcn components) is formatted like the rest; do not add it to `.prettierignore`. That file only lists build output and the lockfile.
+
 ## Dependencies
 
 - Before adding a runtime dependency (`npm i <pkg>`), check its cost: look it up on bundlephobia or read its docs, and prefer a smaller or tree-shakeable alternative when one does the job.
@@ -92,7 +97,7 @@ Use the Testing Library priority order, highest first. Drop down only when the o
 
 ### Snapshots
 
-- Use snapshots only for small, presentational output where markup *is* the contract, such as decorative elements with no accessible semantics (spinners, icon placement). Never snapshot whole pages or forms.
+- Use snapshots only for small, presentational output where markup _is_ the contract, such as decorative elements with no accessible semantics (spinners, icon placement). Never snapshot whole pages or forms.
 - Name each snapshot (`toMatchSnapshot('loading')`). Snapshot alongside behavioral assertions, never instead of them.
 - Review every snapshot diff. Never run `vitest -u` blindly; an unexpected diff is a bug until proven otherwise.
 

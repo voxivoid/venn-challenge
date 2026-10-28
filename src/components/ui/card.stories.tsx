@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from "@storybook/react-vite"
-import { Card, CardContent, CardHeader, CardTitle } from "./card"
+import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Card, CardContent, CardHeader, CardTitle } from './card'
 
 const meta = {
-  title: "UI/Card",
+  title: 'UI/Card',
   component: Card,
   decorators: [
     (Story) => (

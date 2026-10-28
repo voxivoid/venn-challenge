@@ -1,10 +1,10 @@
-import type { Meta, StoryObj } from "@storybook/react-vite"
-import { Label } from "./label"
+import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Label } from './label'
 
 const meta = {
-  title: "UI/Label",
+  title: 'UI/Label',
   component: Label,
-  args: { children: "First Name" },
+  args: { children: 'First Name' },
 } satisfies Meta<typeof Label>
 
 export default meta

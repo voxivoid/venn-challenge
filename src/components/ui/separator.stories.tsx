@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from "@storybook/react-vite"
-import { Separator } from "./separator"
+import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Separator } from './separator'
 
 const meta = {
-  title: "UI/Separator",
+  title: 'UI/Separator',
   component: Separator,
   decorators: [
     (Story) => (
