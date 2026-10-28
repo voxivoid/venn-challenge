@@ -30,13 +30,14 @@ it("renders no alert without an error", () => {
 it("forwards input props and events", async () => {
   const user = userEvent.setup();
   const onBlur = vi.fn();
-  render(<FormField label="Name" maxLength={3} onBlur={onBlur} />);
+  render(<FormField label="Name" placeholder="Jane" onBlur={onBlur} />);
 
   const input = screen.getByRole("textbox", { name: "Name" });
-  await user.type(input, "abcdef");
+  await user.type(input, "abc");
   await user.tab();
 
   expect(input).toHaveValue("abc");
+  expect(input).toHaveAttribute("placeholder", "Jane");
   expect(onBlur).toHaveBeenCalledOnce();
 });
 
@@ -67,4 +68,38 @@ it("matches the rendered markup per state", () => {
 
   rerender(<FormField label="Name" error="Required" />);
   expect(asFragment()).toMatchSnapshot("error");
+});
+
+it("announces required fields without native constraint validation", () => {
+  render(<FormField label="Name" required />);
+
+  const input = screen.getByRole("textbox", { name: "Name" });
+  expect(input).toBeRequired();
+  expect(input).not.toHaveAttribute("required");
+  expect(input).toBeValid();
+});
+
+it("is not marked required by default", () => {
+  render(<FormField label="Name" />);
+
+  expect(screen.getByRole("textbox", { name: "Name" })).not.toBeRequired();
+});
+
+it("keeps a caller description alongside the error", () => {
+  render(
+    <>
+      <p id="hint">Use your legal name</p>
+      <FormField label="Name" aria-describedby="hint" error="Required" />
+    </>,
+  );
+
+  expect(
+    screen.getByRole("textbox", { name: "Name" }),
+  ).toHaveAccessibleDescription("Use your legal name Required");
+});
+
+it("does not let input props override the error state", () => {
+  render(<FormField label="Name" aria-invalid={false} error="Required" />);
+
+  expect(screen.getByRole("textbox", { name: "Name" })).toBeInvalid();
 });
