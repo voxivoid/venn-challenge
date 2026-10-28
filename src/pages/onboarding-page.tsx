@@ -1,5 +1,5 @@
-import { OnboardingForm } from '@/components/onboarding-form/onboarding-form'
-import { PageShell } from '@/components/layout/page-shell'
+import { OnboardingForm } from "@/components/onboarding-form/onboarding-form"
+import { PageShell } from "@/components/layout/page-shell"
 
 export function OnboardingPage() {
   return (

@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Input } from './input'
-import { Field, FieldError, FieldGroup, FieldLabel } from './field'
+import type { Meta, StoryObj } from "@storybook/react-vite"
+import { Input } from "./input"
+import { Field, FieldError, FieldGroup, FieldLabel } from "./field"
 
 const meta = {
-  title: 'UI/Field',
+  title: "UI/Field",
   component: Field,
   decorators: [
     (Story) => (

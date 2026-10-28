@@ -1,7 +1,7 @@
 ---
 name: commit-and-pr
 description: Commit with a conventional commit message, push, and open a GitHub pull request against main with a short summary and a test plan
-argument-hint: '[message hint]'
+argument-hint: "[message hint]"
 ---
 
 # Commit and Open a GitHub Pull Request

@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { OnboardingForm } from './onboarding-form'
+import type { Meta, StoryObj } from "@storybook/react-vite"
+import { OnboardingForm } from "./onboarding-form"
 
 const meta = {
-  title: 'Components/OnboardingForm',
+  title: "Components/OnboardingForm",
   component: OnboardingForm,
   decorators: [
     (Story) => (

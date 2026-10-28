@@ -1,8 +1,8 @@
-import { useId, type ComponentProps } from 'react'
-import { Field, FieldError, FieldLabel } from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
+import { useId, type ComponentProps } from "react"
+import { Field, FieldError, FieldLabel } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
 
-type FormFieldProps = Omit<ComponentProps<typeof Input>, 'id'> & {
+type FormFieldProps = Omit<ComponentProps<typeof Input>, "id"> & {
   label: string
   error?: string
 }

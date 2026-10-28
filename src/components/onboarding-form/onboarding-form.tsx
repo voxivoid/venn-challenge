@@ -1,8 +1,8 @@
-import { ArrowRight } from 'lucide-react'
-import { FormField } from '@/components/form-field'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { FieldGroup } from '@/components/ui/field'
+import { ArrowRight } from "lucide-react"
+import { FormField } from "@/components/form-field"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { FieldGroup } from "@/components/ui/field"
 
 type OnboardingFormProps = {
   isSubmitting?: boolean

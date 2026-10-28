@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import { PageShell } from './page-shell'
+import type { Meta, StoryObj } from "@storybook/react-vite"
+import { PageShell } from "./page-shell"
 
 const meta = {
-  title: 'Layout/PageShell',
+  title: "Layout/PageShell",
   component: PageShell,
   args: { step: 1, totalSteps: 5, children: <p>Page content</p> },
 } satisfies Meta<typeof PageShell>
