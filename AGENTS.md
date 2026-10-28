@@ -44,6 +44,9 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) (semantic commi
 - Build components as pure as possible: output depends only on props (and local UI state). No data fetching, routing, or form-library coupling inside presentational components; pass values, errors and callbacks in as props.
 - Keep side effects and state logic in custom hooks; compose them in routes (`src/routes/`) or container components.
 - Every new component ships with a Storybook story (`Foo.stories.tsx`) covering its states (default, error, disabled, loading, etc.) and a test (`Foo.test.tsx`).
+- Generated shadcn components in `src/components/ui/`:
+  - **Stories:** every component gets one, used or not, so we can see how it looks. Cover its default look plus the variants the app actually uses; add other variants when the app starts using them.
+  - **Tests:** not needed for unmodified components; the integration tests of the components that use them cover them. When we modify a `ui/` component (e.g. `Button` `loading`), test what we changed.
 
 ## Testing
 

@@ -47,12 +47,12 @@ npm test -- <changed test files>
 
 ### Stories
 
-Every new or changed component under `src/components/`, including generated `src/components/ui/`, needs a
-Storybook story next to it (`Foo.tsx` → `Foo.stories.tsx`). Check each one has a story and
-that the stories cover the states and variants the app actually uses (default, error,
-disabled, loading, empty, long content). Skip unused variants of generated `ui/` components;
-add them when the app starts using them.
-Write the missing stories with typed `Meta`/`StoryObj` and `args`, then verify they build:
+Every new or changed component under `src/components/` needs a Storybook story next to it
+(`Foo.tsx` → `Foo.stories.tsx`), including every generated `src/components/ui/` component,
+used or not. Check that each story covers the states and variants the app actually uses
+(default, error, disabled, loading, empty, long content). For `ui/` components, a default
+story is enough until the app uses more variants. Write the missing stories with typed
+`Meta`/`StoryObj` and `args`, then verify they build:
 
 ```bash
 npm run build-storybook
@@ -74,7 +74,7 @@ intentional?"** Wait for an answer. Then update the tests, or revert the change.
 ## 4. Mutation testing
 
 Targets: changed, non-deleted production files in `src/` (exclude `*.test.*`, `src/test/`,
-`*.d.ts`, `src/components/ui/`). No targets → skip this step.
+`*.d.ts`, and unmodified `src/components/ui/` files; include the parts of `ui/` files we changed). No targets → skip this step.
 
 Install only the Stryker packages that are missing, and note which ones you added:
 
