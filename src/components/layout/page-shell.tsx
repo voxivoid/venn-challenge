@@ -1,10 +1,10 @@
-import type { ReactNode } from 'react'
+import type { ReactNode } from "react";
 
 type PageShellProps = {
-  step: number
-  totalSteps: number
-  children: ReactNode
-}
+  step: number;
+  totalSteps: number;
+  children: ReactNode;
+};
 
 export function PageShell({ step, totalSteps, children }: PageShellProps) {
   return (
@@ -14,5 +14,5 @@ export function PageShell({ step, totalSteps, children }: PageShellProps) {
       </p>
       {children}
     </main>
-  )
+  );
 }
