@@ -13,10 +13,22 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     globals: false,
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'src/**/*.{test,stories}.{ts,tsx}',
+        'src/components/ui/**',
+        'src/test/**',
+        'src/main.tsx',
+      ],
+      thresholds: { statements: 80, branches: 80, functions: 80, lines: 80 },
+    },
   },
   plugins: [
     tailwindcss(),
     react(),
-    babel({ presets: [reactCompilerPreset()] }),
+    // Skipped for coverage runs only: compiler memo branches would skew it.
+    !process.env.COVERAGE && babel({ presets: [reactCompilerPreset()] }),
   ],
 });
