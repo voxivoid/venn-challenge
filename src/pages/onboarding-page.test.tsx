@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import { expect, it } from 'vitest'
-import { renderRoute } from '@/test/render-route'
+import { renderRoute } from '@/test/render'
 
 it('renders the onboarding form at / inside the step shell', () => {
   renderRoute('/')
