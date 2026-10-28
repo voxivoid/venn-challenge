@@ -39,6 +39,14 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) (semantic commi
 - The commit type should match the branch type (`feature/` -> `feat`, `fix/` -> `fix`, etc.).
 - Keep commits atomic: one logical change each, and the code builds and tests pass at every commit.
 
+## Dependencies
+
+- Before adding a runtime dependency (`npm i <pkg>`), check its cost: look it up on bundlephobia or read its docs, and prefer a smaller or tree-shakeable alternative when one does the job.
+- After adding it, measure the impact: run `npm run build` before and after and compare the `dist/assets/*.js` sizes (gzip column). A jump of more than ~10 kB gzipped needs a reason.
+- If the increase is large, reduce it: import only what you use (subpath imports), lazy-load it (`React.lazy` or dynamic `import()`), or pick a lighter package.
+- Put the before/after size in the PR summary (e.g. "+8 kB gzip for `zod`"). The build already warns above 500 kB per chunk; never ignore that warning.
+- Dev-only dependencies (`npm i -D`) are exempt.
+
 ## Components
 
 - Build components as pure as possible: output depends only on props (and local UI state). No data fetching, routing, or form-library coupling inside presentational components; pass values, errors and callbacks in as props.
