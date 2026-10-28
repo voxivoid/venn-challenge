@@ -36,7 +36,7 @@ export default defineConfig({
     }),
     tailwindcss(),
     react(),
-    // Skipped under Vitest: compiler memo branches would skew coverage.
-    !process.env.VITEST && babel({ presets: [reactCompilerPreset()] }),
+    // Skipped for coverage runs only: compiler memo branches would skew it.
+    !process.env.COVERAGE && babel({ presets: [reactCompilerPreset()] }),
   ],
 });
