@@ -30,3 +30,5 @@ export const Disabled: Story = {
 export const LongValue: Story = {
   args: { defaultValue: "a".repeat(120), label: "First Name" },
 };
+
+export const Required: Story = { args: { required: true } };

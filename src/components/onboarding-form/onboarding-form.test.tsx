@@ -1,39 +1,40 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { expect, it } from "vitest";
-import { OnboardingForm } from "./onboarding-form";
+import { expect, it, vi } from "vitest";
+import { OnboardingForm, type OnboardingFormProps } from "./onboarding-form";
+import { onboardingFormSchema } from "./onboarding-form.schema";
 
 const field = (name: string) => screen.getByRole("textbox", { name });
 
-it("renders every field and the submit button", () => {
-  render(<OnboardingForm />);
+const renderForm = (props: Partial<OnboardingFormProps> = {}) =>
+  render(
+    <OnboardingForm
+      fields={{ firstName: {}, lastName: {}, phone: {}, corporationNumber: {} }}
+      onSubmit={(event) => event.preventDefault()}
+      {...props}
+    />,
+  );
+
+it("renders every field as required and the submit button", () => {
+  renderForm();
 
   expect(
     screen.getByRole("heading", { name: "Onboarding Form", level: 1 }),
   ).toBeInTheDocument();
-  expect(field("First Name")).toBeInTheDocument();
-  expect(field("Last Name")).toBeInTheDocument();
-  expect(field("Phone Number")).toBeInTheDocument();
-  expect(field("Corporation Number")).toBeInTheDocument();
+  for (const name of [
+    "First Name",
+    "Last Name",
+    "Phone Number",
+    "Corporation Number",
+  ]) {
+    expect(field(name)).toBeRequired();
+  }
   expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
-});
-
-it("limits names to 50 characters and corporation number to 9", async () => {
-  const user = userEvent.setup();
-  render(<OnboardingForm />);
-
-  await user.type(field("First Name"), "a".repeat(60));
-  await user.type(field("Last Name"), "b".repeat(60));
-  await user.type(field("Corporation Number"), "1".repeat(12));
-
-  expect(field("First Name")).toHaveValue("a".repeat(50));
-  expect(field("Last Name")).toHaveValue("b".repeat(50));
-  expect(field("Corporation Number")).toHaveValue("1".repeat(9));
 });
 
 it("lets the user tab through fields in order to submit", async () => {
   const user = userEvent.setup();
-  render(<OnboardingForm />);
+  renderForm();
 
   await user.click(field("First Name"));
   await user.tab();
@@ -46,8 +47,37 @@ it("lets the user tab through fields in order to submit", async () => {
   expect(screen.getByRole("button", { name: "Submit" })).toHaveFocus();
 });
 
+it("shows each field error under its field", () => {
+  renderForm({
+    fields: {
+      firstName: { error: "First name is required" },
+      lastName: {},
+      phone: { error: "Phone number must be a valid Canadian number" },
+      corporationNumber: {},
+    },
+  });
+
+  expect(field("First Name")).toHaveAccessibleDescription(
+    "First name is required",
+  );
+  expect(field("Phone Number")).toHaveAccessibleDescription(
+    "Phone number must be a valid Canadian number",
+  );
+  expect(field("Last Name")).toBeValid();
+});
+
+it("submits with the keyboard", async () => {
+  const user = userEvent.setup();
+  const onSubmit = vi.fn((event: React.FormEvent) => event.preventDefault());
+  renderForm({ onSubmit });
+
+  await user.type(field("First Name"), "{Enter}");
+
+  expect(onSubmit).toHaveBeenCalledOnce();
+});
+
 it("disables the submit button while submitting", () => {
-  render(<OnboardingForm isSubmitting />);
+  renderForm({ isSubmitting: true });
 
   const button = screen.getByRole("button", { name: "Submit" });
   expect(button).toBeDisabled();
@@ -55,9 +85,41 @@ it("disables the submit button while submitting", () => {
 });
 
 it("keeps the submit button enabled when idle", () => {
-  render(<OnboardingForm />);
+  renderForm();
 
   const button = screen.getByRole("button", { name: "Submit" });
   expect(button).toBeEnabled();
   expect(button).not.toHaveAttribute("aria-busy");
+});
+
+it("shows a placeholder example on every field", () => {
+  renderForm();
+
+  for (const name of [
+    "First Name",
+    "Last Name",
+    "Phone Number",
+    "Corporation Number",
+  ]) {
+    expect(field(name)).toHaveAttribute("placeholder");
+  }
+});
+
+it("uses placeholder examples that pass validation", () => {
+  renderForm();
+
+  const examples = {
+    firstName: field("First Name"),
+    lastName: field("Last Name"),
+    phone: field("Phone Number"),
+    corporationNumber: field("Corporation Number"),
+  };
+  const values = Object.fromEntries(
+    Object.entries(examples).map(([key, input]) => [
+      key,
+      input.getAttribute("placeholder"),
+    ]),
+  );
+
+  expect(onboardingFormSchema.safeParse(values).success).toBe(true);
 });

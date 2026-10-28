@@ -1,53 +1,63 @@
+import type { FormEventHandler } from "react";
 import { ArrowRight } from "lucide-react";
-import { FormField } from "@/components/form-field";
+import { FormField, type FormFieldControl } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldGroup } from "@/components/ui/field";
+import type { OnboardingFormField } from "./onboarding-form.schema";
 
-type OnboardingFormProps = {
+export type OnboardingFormProps = {
+  /** Input props and error per field, e.g. from `useOnboardingForm`. */
+  fields: Record<OnboardingFormField, FormFieldControl>;
+  onSubmit: FormEventHandler<HTMLFormElement>;
   isSubmitting?: boolean;
 };
 
-export function OnboardingForm({ isSubmitting = false }: OnboardingFormProps) {
+export function OnboardingForm({
+  fields,
+  onSubmit,
+  isSubmitting = false,
+}: OnboardingFormProps) {
   return (
     <Card className="w-full max-w-lg rounded-3xl bg-background py-6">
       <CardHeader>
-        <CardTitle
-          role="heading"
-          aria-level={1}
-          className="text-center text-2xl font-normal"
-        >
-          Onboarding Form
+        <CardTitle className="text-center text-2xl font-normal">
+          <h1>Onboarding Form</h1>
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form noValidate className="flex flex-col gap-6">
+        <form noValidate onSubmit={onSubmit} className="flex flex-col gap-6">
           <FieldGroup className="gap-5">
             <div className="grid gap-4 sm:grid-cols-2">
               <FormField
                 label="First Name"
-                name="firstName"
-                maxLength={50}
+                placeholder="Jane"
                 autoComplete="given-name"
+                required
+                {...fields.firstName}
               />
               <FormField
                 label="Last Name"
-                name="lastName"
-                maxLength={50}
+                placeholder="Doe"
                 autoComplete="family-name"
+                required
+                {...fields.lastName}
               />
             </div>
             <FormField
               label="Phone Number"
-              name="phone"
               type="tel"
               autoComplete="tel"
+              placeholder="+14165550123"
+              required
+              {...fields.phone}
             />
             <FormField
               label="Corporation Number"
-              name="corporationNumber"
+              placeholder="826417395"
               inputMode="numeric"
-              maxLength={9}
+              required
+              {...fields.corporationNumber}
             />
           </FieldGroup>
           <Button

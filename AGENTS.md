@@ -56,10 +56,22 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) (semantic commi
 
 - Build components as pure as possible: output depends only on props (and local UI state). No data fetching, routing, or form-library coupling inside presentational components; pass values, errors and callbacks in as props.
 - Keep side effects and state logic in custom hooks; compose them in pages (`src/pages/`, wired up in `src/router.tsx`) or container components.
+- Colocate by feature: a component's hook, schema, tests and stories live in its folder (`src/components/onboarding-form/use-onboarding-form.ts`). The component file itself stays pure; its hook is a separate file wired up by the page.
+- `src/hooks/` is only for generic hooks used by two or more features (e.g. `useDebounce`). Move a feature hook there only once a second feature needs it.
 - Every new component ships with a Storybook story (`Foo.stories.tsx`) covering its states (default, error, disabled, loading, etc.) and a test (`Foo.test.tsx`).
 - Generated shadcn components in `src/components/ui/`:
   - **Stories:** every component gets one, used or not, so we can see how it looks. Cover its default look plus the variants the app actually uses; add other variants when the app starts using them.
   - **Tests:** not needed for unmodified components; the integration tests of the components that use them cover them. When we modify a `ui/` component (e.g. `Button` `loading`), test what we changed.
+
+## Utils and validation
+
+- Shared, framework-agnostic helpers live in `src/utils/` (`cn.ts`, ...), one concern per file, each with a colocated test.
+
+- Reusable field validators live in `src/utils/validation/` (one file per validator, exported from `src/utils/validation/index.ts`): e.g. `requiredText`, `personName`, `canadianPhone`, `corporationNumber`. They take the field label so messages read naturally, and build on `requiredText` instead of repeating the required/trim rules.
+- Each form assembles its own schema next to the form component, from those validators: `src/components/<form>/<form>.schema.ts` exports the schema and its inferred types (`<Form>Values`, `<Form>Field`).
+- Do not define field rules inline in a form schema; add or extend a validator in `src/utils/validation/` so other forms can reuse it.
+- Test each validator's edge cases next to it (`person-name.test.ts`); test the assembled form schema only for wiring (labels, trimming, every field reported).
+- Enforce limits through validation messages, not the `maxLength` attribute: a hard limit silently drops typed or pasted characters and tells assistive tech nothing. Keep limits private to the validator that owns them.
 
 ## Testing
 
