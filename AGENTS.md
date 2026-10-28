@@ -105,3 +105,5 @@ Use the Testing Library priority order, highest first. Drop down only when the o
 
 - `npm run test:coverage` enforces 80% statements, branches, functions and lines over `src/`, excluding generated `ui/`, stories, tests and wiring files.
 - Coverage is a floor that flags blind spots, not the goal. Do not write tests just to move the number.
+- `npm test` runs with the React Compiler on, like production. Only `test:coverage` turns it off (`COVERAGE=1`), because the compiler's memo branches would skew branch coverage. Never disable the compiler for regular test runs.
+- Tests do not run on pre-commit (it only lints and typechecks staged files). Run them locally before pushing; CI will run them.
