@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { renderRoute } from "@/test/render-route";
+import { renderRoute } from "@/test/render";
 
 const field = (name: string) => screen.getByRole("textbox", { name });
 

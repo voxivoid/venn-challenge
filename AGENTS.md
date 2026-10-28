@@ -63,6 +63,11 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) (semantic commi
   - **Stories:** every component gets one, used or not, so we can see how it looks. Cover its default look plus the variants the app actually uses; add other variants when the app starts using them.
   - **Tests:** not needed for unmodified components; the integration tests of the components that use them cover them. When we modify a `ui/` component (e.g. `Button` `loading`), test what we changed.
 
+## API
+
+- Server communication lives in `src/api/`: the TanStack Query client (`query-client.ts`) and, as they are added, request functions and query/mutation hooks per resource. Components never call `fetch` directly.
+- Configuration comes from Vite env files (`.env.development`, `.env.production`), only `VITE_`-prefixed vars reach the client. Declare each var in `src/env.d.ts` and read it through `src/api/config.ts`, never `import.meta.env` directly. Never put secrets in these files: they are committed and shipped in the bundle.
+
 ## Utils and validation
 
 - Shared, framework-agnostic helpers live in `src/utils/` (`cn.ts`, ...), one concern per file, each with a colocated test.
@@ -120,7 +125,7 @@ Use the Testing Library priority order, highest first. Drop down only when the o
 
 ### Helpers and data
 
-- Test pages through the real router with `renderRoute(path)` from `src/test/render-route.tsx` (React Router memory router); it returns `user` too.
+- Render through the app providers with helpers from `src/test/render.tsx`: `renderWithProviders(ui)` for components that need providers (TanStack Query), `renderRoute(path)` for pages through the real router (React Router memory router). Both return `user` and a fresh `queryClient`.
 - Build test data with factories in `src/test/` (e.g. `buildProfile({ phone: '…' })`) once a shape is used by more than one test. No copy-pasted fixtures.
 
 ### Hygiene
