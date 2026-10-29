@@ -1,0 +1,5 @@
+# Cloudflare Pages project (account "andre"), deployed by direct upload from the release workflow.
+# No 404.html in dist/, so Pages serves index.html for unknown paths and the client router handles them.
+name = "andre-venn-challenge"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-10-01"

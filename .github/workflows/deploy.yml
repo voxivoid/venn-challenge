@@ -1,0 +1,66 @@
+name: deploy
+
+# Puts an already-released tag on Cloudflare Pages, without cutting a new release. For a rollback (deploy an older
+# tag) or for a release whose deploy step didn't run. New versions still go out through create-release.
+#
+#   gh workflow run deploy.yml -f tag=v1.0.1
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to deploy, e.g. v1.0.1"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: create-release
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ vars.SITE_URL || 'https://andre-venn-challenge.pages.dev' }}
+    steps:
+      - name: Is it a release tag?
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::'$TAG' is not a release tag (vX.Y.Z)"; exit 1; }
+      - uses: actions/checkout@v7
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+
+      - name: Make sure the Cloudflare Pages project exists
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT || 'andre-venn-challenge' }}
+        run: |
+          if npx wrangler pages project list 2>/dev/null | grep -qw "$CF_PAGES_PROJECT"; then
+            echo "project $CF_PAGES_PROJECT exists"
+          else
+            npx wrangler pages project create "$CF_PAGES_PROJECT" --production-branch main
+          fi
+
+      # Same tests, same build, same upload as a release (.releaserc.js prepareCmd / publishCmd).
+      - name: Test, build and deploy ${{ inputs.tag }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT || 'andre-venn-challenge' }}
+          # VITE_API_BASE_URL comes from .env.production
+        run: |
+          npm test
+          npm run build
+          npm run deploy:pages

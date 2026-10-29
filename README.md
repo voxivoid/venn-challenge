@@ -18,18 +18,44 @@ The app talks to the QA API (`https://fe-hometask-api.qa.vault.tryvault.com`). I
 
 ## Scripts
 
-| Script                    | What it does                                                   |
-| ------------------------- | -------------------------------------------------------------- |
-| `npm run dev`             | Start the dev server                                           |
-| `npm run build`           | Typecheck and build for production into `dist/`                |
-| `npm run preview`         | Serve the production build                                     |
-| `npm test`                | Run all tests once (`npm run test:watch` to watch)             |
-| `npm run test:coverage`   | Run tests with coverage; fails under 80%                       |
-| `npm run lint`            | ESLint, type-aware                                             |
-| `npm run typecheck`       | TypeScript only                                                |
-| `npm run format`          | Format everything with Prettier (`format:check` to only check) |
-| `npm run storybook`       | Component explorer on http://localhost:6006                    |
-| `npm run build-storybook` | Static Storybook build                                         |
+| Script                         | What it does                                                      |
+| ------------------------------ | ----------------------------------------------------------------- |
+| `npm run dev`                  | Start the dev server                                              |
+| `npm run build`                | Typecheck and build for production into `dist/`                   |
+| `npm run preview`              | Serve the production build                                        |
+| `npm test`                     | Run all tests once (`npm run test:watch` to watch)                |
+| `npm run test:coverage`        | Run tests with coverage; fails under 80%                          |
+| `npm run lint`                 | ESLint, type-aware                                                |
+| `npm run typecheck`            | TypeScript only                                                   |
+| `npm run format`               | Format everything with Prettier (`format:check` to only check)    |
+| `npm run storybook`            | Component explorer on http://localhost:6006                       |
+| `npm run build-storybook`      | Static Storybook build                                            |
+| `npm run semantic-release:dry` | Show which version the commits since the last tag would release   |
+| `npm run deploy:pages`         | Upload `dist/` to Cloudflare Pages (the release workflow runs it) |
+
+## Deploy
+
+Live at https://andre-venn-challenge.pages.dev (Cloudflare Pages, account "andre").
+
+Committing or merging to `main` deploys nothing. The app goes live only when the **create-release** workflow runs:
+
+```bash
+gh workflow run create-release.yml                  # release
+gh workflow run create-release.yml -f dry_run=true  # say which version would ship, change nothing
+```
+
+It checks that the last CI run on `main` passed, then semantic-release takes over (`.releaserc.js`): it works out the version from the commits since the last tag, tests and builds the app, tags `vX.Y.Z`, uploads `dist/` to Cloudflare Pages with `wrangler pages deploy`, publishes the GitHub release notes and commits the `package.json` bump back as `chore(release): X.Y.Z [skip ci]`.
+
+`feat` → minor, `fix` / `perf` / `refactor` → patch, `!` → major; `docs`, `chore`, `ci`, `test`, `style` alone release nothing. A squash merge keeps only the PR title, so the title decides.
+
+One-time setup, in the repo settings:
+
+- Secrets `CLOUDFLARE_API_TOKEN` (Account → Cloudflare Pages → Edit) and `CLOUDFLARE_ACCOUNT_ID`
+- Optional variables `CF_PAGES_PROJECT` (defaults to `andre-venn-challenge`) and `SITE_URL`
+
+To put an existing tag back on the site without a new release, a rollback for instance, run the **deploy** workflow: `gh workflow run deploy.yml -f tag=v1.0.1`.
+
+Don't connect the repo through Cloudflare's Git integration: that would deploy every push to `main`.
 
 ## Features
 
