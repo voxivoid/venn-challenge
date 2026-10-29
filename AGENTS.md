@@ -18,8 +18,10 @@ Rules for all agents and contributors. Follow them on every change.
   - `perf/` performance improvements
   - `style/` formatting only, no logic change
   - `build/` build system changes
-- One concern per branch. Keep branches small and short-lived.
+- Start every piece of work on a single branch. Keep branches small and short-lived, ideally one concern each.
+- Splitting is the user's call. When the changes cover more than one concern or context (e.g. a refactor mixed with a feature, tooling next to app code, docs beside code, an unrelated fix found along the way, or a diff too large to review in one sitting), suggest splitting into separate branches and PRs, say how you would cut it, then wait for the user's decision. Never split or merge branches on your own.
 - Merge into `main` through a pull request, never by pushing directly.
+- Agents open a pull request only when the user asks for one (e.g. by running `/commit-and-pr` or saying "open a PR"). Committing and pushing a branch does not imply opening a PR; stop after the push and ask. Never merge a PR.
 
 ## Commits
 
