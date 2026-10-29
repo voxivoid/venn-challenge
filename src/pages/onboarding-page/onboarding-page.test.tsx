@@ -399,15 +399,49 @@ describe("submit", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("shows the API message when it rejects the profile", async () => {
+  it("shows the API message under the field it rejects and focuses it", async () => {
     server.use(profileDetailsHandler({ reply: rejectedProfileDetailsReply }));
 
     await fillAndSubmit();
 
-    expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Invalid corporation number",
+    await waitFor(() =>
+      expect(field("Corporation Number")).toHaveAccessibleDescription(
+        "Invalid corporation number",
+      ),
     );
+    expect(field("Corporation Number")).toBeInvalid();
+    expect(field("Corporation Number")).toHaveFocus();
     expect(screen.queryByText(SAVED)).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ["First Name", "Invalid first name"],
+    ["Last Name", "Invalid last name"],
+    ["Phone Number", "Invalid phone number"],
+  ])("shows a rejected %s under its input", async (label, message) => {
+    server.use(
+      profileDetailsHandler({ reply: { status: 400, body: { message } } }),
+    );
+
+    await fillAndSubmit();
+
+    await waitFor(() =>
+      expect(field(label)).toHaveAccessibleDescription(message),
+    );
+  });
+
+  it("shows an API message about no single field below the button", async () => {
+    server.use(
+      profileDetailsHandler({
+        reply: { status: 400, body: { message: "Missing required fields" } },
+      }),
+    );
+
+    await fillAndSubmit();
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Missing required fields",
+    );
   });
 
   it.each([
@@ -422,6 +456,19 @@ describe("submit", () => {
     await fillAndSubmit();
 
     expect(await screen.findByRole("alert")).toHaveTextContent(GENERIC_ERROR);
+  });
+
+  it("keeps a server error below the button even when it names a field", async () => {
+    server.use(
+      profileDetailsHandler({
+        reply: { status: 500, body: { message: "Invalid phone number" } },
+      }),
+    );
+
+    await fillAndSubmit();
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(GENERIC_ERROR);
+    expect(field("Phone Number")).toBeValid();
   });
 
   it("clears the error and saves when a retry succeeds", async () => {

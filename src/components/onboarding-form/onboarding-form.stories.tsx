@@ -64,7 +64,7 @@ export const CorporationNumberVerified: Story = {
 export const Submitting: Story = { args: { isSubmitting: true } };
 
 export const SubmitError: Story = {
-  args: { submitError: "Invalid corporation number" },
+  args: { submitError: "Missing required fields" },
 };
 
 export const Submitted: Story = { args: { isSubmitSuccessful: true } };

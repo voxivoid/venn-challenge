@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { ApiError } from "@/api/api-error";
 import { useCheckCorporationNumberQuery } from "@/api/corporation-number";
+import { profileDetailsErrorField } from "@/api/profile-details";
 import type { FormFieldControl } from "@/components/form-field/form-field";
 import type { InputStatus } from "@/components/ui/input";
 import type { OnboardingFormProps } from "./onboarding-form";
@@ -21,7 +22,10 @@ const emptyValues: OnboardingFormValues = {
 const GENERIC_SUBMIT_ERROR = "Something went wrong, please try again";
 
 type UseOnboardingFormOptions = {
-  /** Called with the parsed values once every field is valid. A throw shows as a form error. */
+  /**
+   * Called with the parsed values once every field is valid. A thrown `ApiError`
+   * about one field shows under it; any other throw shows as a form error.
+   */
   onSubmit?: (values: OnboardingFormValues) => void | Promise<void>;
 };
 
@@ -78,7 +82,11 @@ export function useOnboardingForm({
       try {
         await onSubmit?.(values);
       } catch (error) {
-        form.setError("root.submit", { message: submitErrorMessage(error) });
+        const message = submitErrorMessage(error);
+        // The generic message names no field, so server errors stay form-wide.
+        const field = profileDetailsErrorField(message);
+        if (field) form.setError(field, { message }, { shouldFocus: true });
+        else form.setError("root.submit", { message });
       }
     }),
     isSubmitting,

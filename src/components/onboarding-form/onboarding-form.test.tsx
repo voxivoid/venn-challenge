@@ -93,10 +93,10 @@ it("keeps the submit button enabled when idle", () => {
 });
 
 it("shows a submit error as an alert", () => {
-  renderForm({ submitError: "Invalid corporation number" });
+  renderForm({ submitError: "Missing required fields" });
 
   expect(screen.getByRole("alert")).toHaveTextContent(
-    "Invalid corporation number",
+    "Missing required fields",
   );
 });
 
