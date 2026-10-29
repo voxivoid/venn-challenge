@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useCheckCorporationNumber } from "@/api/corporation-number";
+import { useCheckCorporationNumberQuery } from "@/api/corporation-number";
 import type { FormFieldControl } from "@/components/form-field";
 import type { OnboardingFormProps } from "./onboarding-form";
 import {
@@ -28,7 +28,7 @@ type UseOnboardingFormOptions = {
 export function useOnboardingForm({
   onSubmit,
 }: UseOnboardingFormOptions = {}): OnboardingFormProps {
-  const checkCorporationNumber = useCheckCorporationNumber();
+  const checkCorporationNumber = useCheckCorporationNumberQuery();
   const form = useForm<OnboardingFormValues>({
     resolver: zodResolver(
       createOnboardingFormSchema({ checkCorporationNumber }),
