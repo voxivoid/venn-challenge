@@ -16,7 +16,10 @@ export type MockReply<Body> = { status?: number; body: Body | ApiErrorBody };
 
 type ReplyFor<Body> =
   | MockReply<Body>
-  | ((request: { params: PathParams; request: Request }) => MockReply<Body>);
+  | ((request: {
+      params: PathParams;
+      request: Request;
+    }) => MockReply<Body> | Promise<MockReply<Body>>);
 
 export type MockHandlerOptions<Body> = {
   /** Overrides the default reply for this test. */
@@ -51,7 +54,7 @@ export function createMockHandler<Body extends JsonBodyType>({
       if (networkError) return HttpResponse.error();
 
       const { status = 200, body } =
-        typeof reply === "function" ? reply(info) : reply;
+        typeof reply === "function" ? await reply(info) : reply;
       return HttpResponse.json(body, { status });
     });
 }

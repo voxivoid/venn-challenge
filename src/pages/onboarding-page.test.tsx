@@ -1,9 +1,15 @@
 import { screen, waitFor } from "@testing-library/react";
-import { describe, expect, it, onTestFinished } from "vitest";
+import { beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import {
   corporationNumberHandler,
   invalidCorporationNumberReply,
 } from "@/api/corporation-number/corporation-number.handlers";
+import {
+  profileDetailsHandler,
+  rejectedProfileDetailsReply,
+} from "@/api/profile-details/profile-details.handlers";
+import type { OnboardingFormValues } from "@/components/onboarding-form/onboarding-form.schema";
+import { buildOnboardingFormValues } from "@/test/factories";
 import { renderRoute } from "@/test/render";
 import { server } from "@/test/server";
 
@@ -276,5 +282,132 @@ describe("corporation number check", () => {
         "Invalid corporation number",
       ),
     );
+  });
+});
+
+describe("submit", () => {
+  const submitButton = () => screen.getByRole("button", { name: "Submit" });
+  const SAVED = "Your profile details have been saved.";
+  const GENERIC_ERROR = "Something went wrong, please try again";
+
+  async function fill(values = buildOnboardingFormValues()) {
+    const { user } = renderRoute("/");
+    await user.type(field("First Name"), values.firstName);
+    await user.type(field("Last Name"), values.lastName);
+    await user.type(field("Phone Number"), values.phone);
+    await user.type(field("Corporation Number"), values.corporationNumber);
+    return user;
+  }
+
+  async function fillAndSubmit(values?: OnboardingFormValues) {
+    const user = await fill(values);
+    await user.click(submitButton());
+    return user;
+  }
+
+  beforeEach(() => {
+    server.use(corporationNumberHandler());
+  });
+
+  it("sends the trimmed values as JSON and confirms the save", async () => {
+    let sent: { contentType: string | null; body: unknown } | undefined;
+    server.use(
+      profileDetailsHandler({
+        reply: async ({ request }) => {
+          sent = {
+            contentType: request.headers.get("Content-Type"),
+            body: await request.json(),
+          };
+          return { body: null };
+        },
+      }),
+    );
+
+    await fillAndSubmit(buildOnboardingFormValues({ firstName: " Hello " }));
+
+    expect(await screen.findByRole("status")).toHaveTextContent(SAVED);
+    expect(sent).toEqual({
+      contentType: "application/json",
+      body: buildOnboardingFormValues(),
+    });
+  });
+
+  it("does not send anything while a field is invalid", async () => {
+    const requested = vi.fn(() => ({ body: null }));
+    server.use(profileDetailsHandler({ reply: requested }));
+
+    await fillAndSubmit(buildOnboardingFormValues({ phone: "123" }));
+
+    expect(field("Phone Number")).toBeInvalid();
+    expect(requested).not.toHaveBeenCalled();
+  });
+
+  it("shows the button as busy while the request is in flight", async () => {
+    server.use(profileDetailsHandler({ delay: 50 }));
+
+    await fillAndSubmit();
+
+    await waitFor(() =>
+      expect(submitButton()).toHaveAttribute("aria-busy", "true"),
+    );
+    expect(submitButton()).toBeDisabled();
+    expect(await screen.findByText(SAVED)).toBeInTheDocument();
+  });
+
+  it("replaces the submit button with the saved message", async () => {
+    server.use(profileDetailsHandler());
+
+    await fillAndSubmit();
+
+    expect(await screen.findByText(SAVED)).toHaveFocus();
+    expect(
+      screen.queryByRole("button", { name: "Submit" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows the API message when it rejects the profile", async () => {
+    server.use(profileDetailsHandler({ reply: rejectedProfileDetailsReply }));
+
+    await fillAndSubmit();
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Invalid corporation number",
+    );
+    expect(screen.queryByText(SAVED)).not.toBeInTheDocument();
+  });
+
+  it.each([
+    [
+      "a server error",
+      { reply: { status: 500, body: { message: "Internal error" } } },
+    ],
+    ["a network failure", { networkError: true }],
+  ] as const)("asks the user to retry after %s", async (_, options) => {
+    server.use(profileDetailsHandler(options));
+
+    await fillAndSubmit();
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(GENERIC_ERROR);
+  });
+
+  it("clears the error and saves when a retry succeeds", async () => {
+    server.use(profileDetailsHandler({ reply: rejectedProfileDetailsReply }));
+    const user = await fillAndSubmit();
+    await screen.findByRole("alert");
+
+    server.use(profileDetailsHandler());
+    await user.click(submitButton());
+
+    expect(await screen.findByText(SAVED)).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("submits with Enter from a field", async () => {
+    server.use(profileDetailsHandler());
+    const user = await fill();
+
+    await user.keyboard("{Enter}");
+
+    expect(await screen.findByText(SAVED)).toBeInTheDocument();
   });
 });
