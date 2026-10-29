@@ -65,7 +65,7 @@ Don't connect the repo through Cloudflare's Git integration: that would deploy e
 - **Phone number:** required, Canadian only, in `+1XXXXXXXXXX` form with no spaces or symbols other than the leading `+`. Validated with `libphonenumber-js`, so numbers with unassigned or US area codes are rejected too.
 - **Corporation number:** required, 9 digits, then checked with `GET /corporation-number/:number`. The input shows a spinner while checking, then a check mark or a cross.
 - **Validation on blur**, including the remote check. Errors show under each field and are linked to their input for screen readers.
-- **Submit** validates every field (reusing a cached corporation number check), then sends `POST /profile-details`. A 400 shows the API's message above the button; other failures show a generic retry message. On success the button is replaced by a "saved" message, which takes focus and is announced.
+- **Submit** validates every field (reusing a cached corporation number check), then sends `POST /profile-details`. A 400 about one field (e.g. "Invalid phone number") shows under that field and focuses it; any other 400 shows the API's message below the button, and other failures show a generic retry message. On success the button is replaced by a "saved" message, which takes focus and is announced.
 
 ## Project structure
 
@@ -104,7 +104,7 @@ Each feature keeps its code, tests and stories in one folder. `AGENTS.md` has th
 - **Validators** have their own edge-case tests (boundaries, special characters, non-Canadian numbers).
 - **Tests fail on any `console.error` or `console.warn`**, so React warnings cannot slip through.
 - **Coverage** must stay at or above 80% (it is currently 100%). Tests run with the React Compiler on, as in production.
-- **Storybook** shows each component's states (empty, errors, checking, verified, submitting, submitted) and runs accessibility checks.
+- **Storybook** shows each component's states (empty, errors, checking, verified, submitting, submitted), exposes their props as controls and runs accessibility checks.
 
 ## Quality gates
 
