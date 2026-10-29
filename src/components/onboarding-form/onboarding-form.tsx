@@ -16,7 +16,7 @@ export type OnboardingFormProps = {
   isSubmitting?: boolean;
   /** The last submit went through. */
   isSubmitSuccessful?: boolean;
-  /** Why the last submit failed, shown above the button. */
+  /** Why the last submit failed, shown below the button. */
   submitError?: string;
 };
 
@@ -71,9 +71,6 @@ export function OnboardingForm({
               {...fields.corporationNumber}
             />
           </FieldGroup>
-          {submitError && (
-            <FieldError className="text-center">{submitError}</FieldError>
-          )}
           {/* Always mounted so screen readers announce the message when it appears. */}
           <div role="status" className="empty:hidden">
             {isSubmitSuccessful && (
@@ -98,6 +95,9 @@ export function OnboardingForm({
             >
               Submit
             </Button>
+          )}
+          {submitError && (
+            <FieldError className="text-center">{submitError}</FieldError>
           )}
         </form>
       </CardContent>

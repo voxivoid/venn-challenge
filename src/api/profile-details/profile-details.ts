@@ -18,6 +18,18 @@ export async function createProfileDetails(
   if (!response.ok) throw await toApiError(response);
 }
 
+/** The 400 messages that name one field, mapped to that field. */
+const FIELD_BY_ERROR_MESSAGE = new Map<string, keyof ProfileDetails>([
+  ["Invalid first name", "firstName"],
+  ["Invalid last name", "lastName"],
+  ["Invalid phone number", "phone"],
+  ["Invalid corporation number", "corporationNumber"],
+]);
+
+/** The field a rejected submit's message is about; `undefined` for form-wide ones like "Missing required fields". */
+export const profileDetailsErrorField = (message: string) =>
+  FIELD_BY_ERROR_MESSAGE.get(message);
+
 export const createProfileDetailsMutation = () =>
   mutationOptions({ mutationFn: createProfileDetails });
 

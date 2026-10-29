@@ -17,7 +17,7 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div className="flex min-h-svh justify-center bg-muted/50 px-4 py-12">
+      <div className="flex min-h-svh items-start justify-center bg-muted/50 px-4 py-12">
         <Story />
       </div>
     ),
@@ -64,7 +64,7 @@ export const CorporationNumberVerified: Story = {
 export const Submitting: Story = { args: { isSubmitting: true } };
 
 export const SubmitError: Story = {
-  args: { submitError: "Invalid corporation number" },
+  args: { submitError: "Missing required fields" },
 };
 
 export const Submitted: Story = { args: { isSubmitSuccessful: true } };
