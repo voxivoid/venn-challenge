@@ -139,7 +139,7 @@ it("shows a placeholder example on every field", () => {
   }
 });
 
-it("uses placeholder examples that pass validation", () => {
+it("uses placeholder examples that pass validation", async () => {
   renderForm();
 
   const examples = {
@@ -155,5 +155,7 @@ it("uses placeholder examples that pass validation", () => {
     ]),
   );
 
-  expect(onboardingFormSchema.safeParse(values).success).toBe(true);
+  const result = await onboardingFormSchema.safeParseAsync(values);
+
+  expect(result.success).toBe(true);
 });

@@ -26,6 +26,22 @@ export default defineConfig({
       thresholds: { statements: 80, branches: 80, functions: 80, lines: 80 },
     },
   },
+  build: {
+    rolldownOptions: {
+      output: {
+        // The React stack is the largest dependency and changes rarely, so it
+        // gets its own chunk that stays cached across deploys.
+        codeSplitting: {
+          groups: [
+            {
+              name: "react",
+              test: /node_modules[\\/](react|react-dom|react-router|scheduler)[\\/]/,
+            },
+          ],
+        },
+      },
+    },
+  },
   plugins: [
     tailwindcss(),
     react(),
