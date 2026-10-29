@@ -92,7 +92,9 @@ it("shows the button as busy until onSubmit settles", async () => {
 
   expect(submitButton()).toHaveAttribute("aria-busy", "true");
   resolve();
-  await vi.waitFor(() => expect(submitButton()).toBeEnabled());
+  expect(
+    await screen.findByText("Your profile details have been saved."),
+  ).toBeInTheDocument();
 });
 
 it("submits without an onSubmit handler", async () => {

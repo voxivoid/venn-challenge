@@ -92,6 +92,40 @@ it("keeps the submit button enabled when idle", () => {
   expect(button).not.toHaveAttribute("aria-busy");
 });
 
+it("shows a submit error as an alert", () => {
+  renderForm({ submitError: "Invalid corporation number" });
+
+  expect(screen.getByRole("alert")).toHaveTextContent(
+    "Invalid corporation number",
+  );
+});
+
+it("announces a successful submit", () => {
+  renderForm({ isSubmitSuccessful: true });
+
+  expect(screen.getByRole("status")).toHaveTextContent(
+    "Your profile details have been saved.",
+  );
+});
+
+it("replaces the submit button with the saved message, which takes focus", () => {
+  renderForm({ isSubmitSuccessful: true });
+
+  expect(
+    screen.queryByRole("button", { name: "Submit" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByText("Your profile details have been saved."),
+  ).toHaveFocus();
+});
+
+it("shows no submit outcome before submitting", () => {
+  renderForm();
+
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(screen.getByRole("status")).toBeEmptyDOMElement();
+});
+
 it("shows a placeholder example on every field", () => {
   renderForm();
 

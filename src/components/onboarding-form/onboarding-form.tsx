@@ -1,9 +1,9 @@
 import type { FormEventHandler } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CircleCheck } from "lucide-react";
 import { FormField, type FormFieldControl } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FieldGroup } from "@/components/ui/field";
+import { FieldError, FieldGroup } from "@/components/ui/field";
 import type { OnboardingFormField } from "./onboarding-form.schema";
 
 export type OnboardingFormProps = {
@@ -11,12 +11,20 @@ export type OnboardingFormProps = {
   fields: Record<OnboardingFormField, FormFieldControl>;
   onSubmit: FormEventHandler<HTMLFormElement>;
   isSubmitting?: boolean;
+  /** The last submit went through. */
+  isSubmitSuccessful?: boolean;
+  /** Why the last submit failed, shown above the button. */
+  submitError?: string;
 };
+
+const focus = (element: HTMLElement | null) => element?.focus();
 
 export function OnboardingForm({
   fields,
   onSubmit,
   isSubmitting = false,
+  isSubmitSuccessful = false,
+  submitError,
 }: OnboardingFormProps) {
   return (
     <Card className="w-full max-w-lg rounded-3xl bg-background py-6">
@@ -60,15 +68,34 @@ export function OnboardingForm({
               {...fields.corporationNumber}
             />
           </FieldGroup>
-          <Button
-            type="submit"
-            size="lg"
-            loading={isSubmitting}
-            icon={<ArrowRight />}
-            className="h-11 w-full rounded-xl text-sm"
-          >
-            Submit
-          </Button>
+          {submitError && (
+            <FieldError className="text-center">{submitError}</FieldError>
+          )}
+          {/* Always mounted so screen readers announce the message when it appears. */}
+          <div role="status" className="empty:hidden">
+            {isSubmitSuccessful && (
+              // Takes focus, since it replaces the button that had it.
+              <p
+                ref={focus}
+                tabIndex={-1}
+                className="flex h-11 items-center justify-center gap-2 text-sm font-medium text-green-600 outline-none dark:text-green-500"
+              >
+                <CircleCheck aria-hidden className="size-5" />
+                Your profile details have been saved.
+              </p>
+            )}
+          </div>
+          {!isSubmitSuccessful && (
+            <Button
+              type="submit"
+              size="lg"
+              loading={isSubmitting}
+              icon={<ArrowRight />}
+              className="h-11 w-full rounded-xl text-sm"
+            >
+              Submit
+            </Button>
+          )}
         </form>
       </CardContent>
     </Card>
