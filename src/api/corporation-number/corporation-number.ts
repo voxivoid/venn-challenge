@@ -38,7 +38,7 @@ export const corporationNumberQuery = (number: string) =>
  * Checks a corporation number through the query cache: repeated blurs and the
  * submit reuse the answer, and concurrent checks share one request.
  */
-export function useCheckCorporationNumber(): CorporationNumberCheck {
+export function useCheckCorporationNumberQuery(): CorporationNumberCheck {
   const queryClient = useQueryClient();
   return (number) => queryClient.query(corporationNumberQuery(number));
 }
