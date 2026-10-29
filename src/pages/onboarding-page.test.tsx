@@ -198,6 +198,39 @@ describe("corporation number check", () => {
     expect(corporationNumber()).toBeValid();
   });
 
+  it("shows a spinner in the field while checking, then a check mark", async () => {
+    server.use(corporationNumberHandler({ delay: 50 }));
+
+    await blurWith("826417395");
+
+    expect(
+      await screen.findByRole("img", { name: "Checking" }),
+    ).toBeInTheDocument();
+    expect(corporationNumber()).toHaveAttribute("aria-busy", "true");
+    expect(
+      await screen.findByRole("img", { name: "Valid" }),
+    ).toBeInTheDocument();
+    expect(corporationNumber()).not.toHaveAttribute("aria-busy");
+  });
+
+  it("shows a cross in the field for an unknown number", async () => {
+    server.use(
+      corporationNumberHandler({ reply: invalidCorporationNumberReply }),
+    );
+
+    await blurWith("111111111");
+
+    expect(
+      await screen.findByRole("img", { name: "Invalid" }),
+    ).toBeInTheDocument();
+  });
+
+  it("shows no status icon before the field is checked", () => {
+    renderRoute("/");
+
+    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+  });
+
   it("shows the API message for an unknown number", async () => {
     server.use(
       corporationNumberHandler({ reply: invalidCorporationNumberReply }),
