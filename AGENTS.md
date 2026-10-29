@@ -23,6 +23,11 @@ Rules for all agents and contributors. Follow them on every change.
 - Merge into `main` through a pull request, never by pushing directly.
 - Agents open a pull request only when the user asks for one (e.g. by running `/commit-and-pr` or saying "open a PR"). Committing and pushing a branch does not imply opening a PR; stop after the push and ask. Never merge a PR.
 
+## CI
+
+- GitHub Actions (`.github/workflows/ci.yml`) runs on every pull request and every push to `main`: format check, lint, typecheck, tests, coverage, app build and Storybook build. Every step must pass before a PR is merged.
+- When adding a check that matters for every change, add it as a step there instead of relying on contributors to run it locally.
+
 ## Commits
 
 Use [Conventional Commits](https://www.conventionalcommits.org/) (semantic commits):
