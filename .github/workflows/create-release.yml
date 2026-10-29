@@ -1,0 +1,137 @@
+name: create-release
+
+# The only way the app reaches Cloudflare Pages. Commits and merges to `main` deploy nothing; this decides the
+# version from the commits since the last tag, tests and builds the app, tags, deploys, publishes the GitHub
+# release and commits the bump back. See .releaserc.js.
+#
+# Run it from the Actions tab, or:
+#   gh workflow run create-release.yml                  release
+#   gh workflow run create-release.yml -f dry_run=true  report only, change nothing
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Report the version that would be released, change nothing"
+        required: false
+        type: boolean
+        default: false
+      allow_failing_checks:
+        description: "Release even if the last CI run on main failed"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: create-release
+  cancel-in-progress: false
+
+jobs:
+  # What would ship, and is main in a state worth shipping? Nothing is pushed here.
+  preview:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.next.outputs.version }}
+      releasable: ${{ steps.next.outputs.releasable }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+
+      - name: Did the last CI run on main pass?
+        if: ${{ !inputs.allow_failing_checks }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          C="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow ci.yml --branch main --event push --limit 1 \
+                 --json conclusion --jq '.[0].conclusion // "none"')"
+          case "$C" in
+            success) echo "last CI on main: success" ;;
+            none)    echo "::warning::no CI run found on main — continuing" ;;
+            *)       echo "::error::last CI run on main concluded '$C'. Re-run it, or dispatch again with allow_failing_checks."; exit 1 ;;
+          esac
+
+      - name: What would semantic-release publish?
+        id: next
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          # See the release job: semantic-release takes the branch from GITHUB_REF, the dispatch ref.
+          export GITHUB_REF=refs/heads/main
+          OUT="$(npx semantic-release --dry-run 2>&1 || true)"
+          echo "$OUT" | grep -viE 'Loaded plugin' | tail -40
+          V="$(printf '%s' "$OUT" | sed -n 's/.*next release version is \([0-9][0-9.]*\).*/\1/p' | tail -1)"
+          if [ -n "$V" ]; then
+            echo "version=$V"      >> "$GITHUB_OUTPUT"
+            echo "releasable=true" >> "$GITHUB_OUTPUT"
+            echo "## Would release $V" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "releasable=false" >> "$GITHUB_OUTPUT"
+            {
+              echo "## Nothing to release"
+              echo
+              echo "No commit since the last tag carries a releasable type (feat, fix, perf, refactor). A squash"
+              echo "merge leaves only the PR title, so a PR titled \`chore:\` contributes nothing releasable."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  # semantic-release owns everything from here: version, build, tag, deploy, publish.
+  release:
+    needs: preview
+    if: ${{ !inputs.dry_run && needs.preview.outputs.releasable == 'true' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ vars.SITE_URL || 'https://andre-venn-challenge.pages.dev' }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: true
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+
+      # Direct upload needs the project to exist; it is created once, on the first release.
+      - name: Make sure the Cloudflare Pages project exists
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT || 'andre-venn-challenge' }}
+        run: |
+          if npx wrangler pages project list 2>/dev/null | grep -qw "$CF_PAGES_PROJECT"; then
+            echo "project $CF_PAGES_PROJECT exists"
+          else
+            npx wrangler pages project create "$CF_PAGES_PROJECT" --production-branch main
+          fi
+
+      # Tests and builds the app, tags main's tip, deploys dist/, publishes the release and commits the bump back.
+      - name: semantic-release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT || 'andre-venn-challenge' }}
+          # VITE_API_BASE_URL comes from .env.production
+        run: |
+          # semantic-release reads the current branch from GITHUB_REF, the ref the run was dispatched on, not the
+          # one checked out. Dispatched from a work branch it would find itself on a branch .releaserc.js doesn't
+          # publish from and no-op. This job only ever releases main, so say so. It has to be an export inside the
+          # step: the runner reserves the GITHUB_ prefix and overrides anything set through env:.
+          export GITHUB_REF=refs/heads/main
+          npx semantic-release

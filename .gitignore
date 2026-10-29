@@ -27,3 +27,6 @@ dist-ssr
 storybook-static
 
 coverage
+
+# Wrangler
+.wrangler
