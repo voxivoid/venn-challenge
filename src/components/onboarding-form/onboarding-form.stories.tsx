@@ -17,7 +17,7 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <div className="flex min-h-svh justify-center bg-muted/50 px-4 py-12">
+      <div className="flex min-h-svh items-start justify-center bg-muted/50 px-4 py-12">
         <Story />
       </div>
     ),
