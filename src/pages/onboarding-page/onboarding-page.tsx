@@ -1,7 +1,7 @@
 import { useCreateProfileDetailsMutation } from "@/api/profile-details";
 import { OnboardingForm } from "@/components/onboarding-form/onboarding-form";
-import { PageShell } from "@/components/layout/page-shell";
 import { useOnboardingForm } from "@/components/onboarding-form/use-onboarding-form";
+import { StepIndicator } from "@/components/step-indicator/step-indicator";
 
 export function OnboardingPage() {
   const { mutateAsync: createProfileDetails } =
@@ -9,8 +9,9 @@ export function OnboardingPage() {
   const form = useOnboardingForm({ onSubmit: createProfileDetails });
 
   return (
-    <PageShell step={1} totalSteps={5}>
+    <>
+      <StepIndicator step={1} totalSteps={5} />
       <OnboardingForm {...form} />
-    </PageShell>
+    </>
   );
 }

@@ -76,9 +76,10 @@ src/
     api-error.ts          error carrying the HTTP status and API message
   components/
     onboarding-form/      the form, its hook, schema, tests and stories
-    layout/               page shell ("Step 1 of 5")
-    form-field.tsx        label + input + error, used for every field
+    form-field/           label + input + error, used for every field
+    step-indicator/       "Step 1 of 5"
     ui/                   shadcn components
+  layouts/                route wrappers shared by many pages (default layout)
   pages/                  route components, wired up in router.tsx
   utils/validation/       reusable zod field validators
   test/                   test setup, render helpers, factories, MSW server
