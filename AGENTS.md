@@ -53,6 +53,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/) (semantic commi
 - If the increase is large, reduce it: import only what you use (subpath imports), lazy-load it (`React.lazy` or dynamic `import()`), or pick a lighter package.
 - Put the before/after size in the PR summary (e.g. "+8 kB gzip for `zod`"). The build already warns above 500 kB per chunk; never ignore that warning.
 - Dev-only dependencies (`npm i -D`) are exempt.
+- Never use APIs marked `@deprecated`; use the replacement their note names. `npm run lint` fails on them (`@typescript-eslint/no-deprecated`, which needs type-aware linting).
 
 ## Components
 

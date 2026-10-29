@@ -22,6 +22,18 @@ export default defineConfig([
     ],
     languageOptions: {
       globals: globals.browser,
+      // Type-aware linting, needed by rules that read types (no-deprecated).
+      parserOptions: {
+        projectService: {
+          // Storybook config is outside every tsconfig.
+          allowDefaultProject: [".storybook/*.ts"],
+        },
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    rules: {
+      // Flags APIs marked @deprecated in their types (e.g. React's FormEvent).
+      "@typescript-eslint/no-deprecated": "error",
     },
   },
   {
