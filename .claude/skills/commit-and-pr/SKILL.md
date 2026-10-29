@@ -46,7 +46,7 @@ git switch -c <type>/<short-kebab-description>
 | `feature/`                                                                  | `feat`      |
 | `fix/` `docs/` `ci/` `chore/` `refactor/` `test/` `perf/` `style/` `build/` | same name   |
 
-One concern per branch. If the changes mix unrelated work, split them across branches.
+Default to one branch. If the changes mix concerns, suggest how to split them across branches and PRs and let the user decide; never split on your own (see AGENTS.md).
 
 ### 4. Stage and commit
 
