@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { ApiError } from "@/api/api-error";
 import { useCheckCorporationNumberQuery } from "@/api/corporation-number";
 import type { FormFieldControl } from "@/components/form-field";
+import type { InputStatus } from "@/components/ui/input";
 import type { OnboardingFormProps } from "./onboarding-form";
 import {
   createOnboardingFormSchema,
@@ -41,19 +42,37 @@ export function useOnboardingForm({
     reValidateMode: "onBlur",
     defaultValues: emptyValues,
   });
-  const { errors, isSubmitting, isSubmitSuccessful } = form.formState;
+  const {
+    errors,
+    isSubmitting,
+    isSubmitSuccessful,
+    isSubmitted,
+    touchedFields,
+    validatingFields,
+  } = form.formState;
 
   const field = (name: OnboardingFormField): FormFieldControl => ({
     ...form.register(name),
     error: errors[name]?.message,
   });
 
+  /** Checking while validating, then the outcome once the field was blurred or submitted. */
+  const status = (name: OnboardingFormField): InputStatus | undefined => {
+    if (validatingFields[name]) return "loading";
+    if (errors[name]) return "invalid";
+    return touchedFields[name] || isSubmitted ? "valid" : undefined;
+  };
+
   return {
     fields: {
       firstName: field("firstName"),
       lastName: field("lastName"),
       phone: field("phone"),
-      corporationNumber: field("corporationNumber"),
+      // Only the remote check is slow enough to need visible feedback.
+      corporationNumber: {
+        ...field("corporationNumber"),
+        status: status("corporationNumber"),
+      },
     },
     onSubmit: form.handleSubmit(async (values) => {
       try {

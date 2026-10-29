@@ -32,3 +32,19 @@ export const LongValue: Story = {
 };
 
 export const Required: Story = { args: { required: true } };
+
+export const Checking: Story = {
+  args: { status: "loading", defaultValue: "826417395" },
+};
+
+export const Verified: Story = {
+  args: { status: "valid", defaultValue: "826417395" },
+};
+
+export const Rejected: Story = {
+  args: {
+    status: "invalid",
+    defaultValue: "111111111",
+    error: "Invalid corporation number",
+  },
+};

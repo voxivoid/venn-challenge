@@ -35,7 +35,28 @@ export const WithFieldErrors: Story = {
       firstName: { error: "First name is required" },
       lastName: { error: "Last name is required" },
       phone: { error: "Phone number must be a valid Canadian number" },
-      corporationNumber: { error: "Invalid corporation number" },
+      corporationNumber: {
+        error: "Invalid corporation number",
+        status: "invalid",
+      },
+    },
+  },
+};
+
+export const CheckingCorporationNumber: Story = {
+  args: {
+    fields: {
+      ...emptyFields,
+      corporationNumber: { defaultValue: "826417395", status: "loading" },
+    },
+  },
+};
+
+export const CorporationNumberVerified: Story = {
+  args: {
+    fields: {
+      ...emptyFields,
+      corporationNumber: { defaultValue: "826417395", status: "valid" },
     },
   },
 };
