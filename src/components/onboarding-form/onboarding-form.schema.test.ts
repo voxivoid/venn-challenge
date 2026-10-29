@@ -2,22 +2,24 @@ import { expect, it } from "vitest";
 import { buildOnboardingFormValues } from "@/test/factories";
 import { onboardingFormSchema } from "./onboarding-form.schema";
 
-it("accepts valid values", () => {
-  expect(
-    onboardingFormSchema.safeParse(buildOnboardingFormValues()).success,
-  ).toBe(true);
+it("accepts valid values", async () => {
+  const result = await onboardingFormSchema.safeParseAsync(
+    buildOnboardingFormValues(),
+  );
+
+  expect(result.success).toBe(true);
 });
 
-it("returns trimmed values", () => {
-  const values = onboardingFormSchema.parse(
+it("returns trimmed values", async () => {
+  const values = await onboardingFormSchema.parseAsync(
     buildOnboardingFormValues({ firstName: " Hello " }),
   );
 
   expect(values.firstName).toBe("Hello");
 });
 
-it("labels each field in its messages", () => {
-  const result = onboardingFormSchema.safeParse({
+it("labels each field in its messages", async () => {
+  const result = await onboardingFormSchema.safeParseAsync({
     firstName: "",
     lastName: "",
     phone: "",

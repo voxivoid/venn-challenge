@@ -1,20 +1,23 @@
-import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { requiredText } from "./required-text";
 
-const parse = (value: string) => parsePhoneNumberFromString(value);
-
-/** Already in E.164 form: `+`, country code and digits only, nothing else. */
-const isE164 = (value: string) => parse(value)?.number === value;
-
-const isCanadian = (value: string) => {
-  const phone = parse(value);
-  return phone?.country === "CA" && phone.isValid();
-};
-
+/** A Canadian number in E.164 form. Async: parse with `safeParseAsync`. */
 export const canadianPhone = (label: string) =>
-  requiredText(label)
-    .refine(isE164, {
-      message: `${label} must start with +1 and contain only digits`,
-      abort: true,
-    })
-    .refine(isCanadian, `${label} must be a valid Canadian number`);
+  requiredText(label).superRefine(async (value, ctx) => {
+    // libphonenumber-js is a third of the bundle and only needed once a phone
+    // is checked, so it loads on first use into its own chunk.
+    const { parsePhoneNumberFromString } = await import("libphonenumber-js");
+    const phone = parsePhoneNumberFromString(value);
+
+    // E.164: `+`, country code and digits only, nothing else.
+    if (phone?.number !== value) {
+      ctx.addIssue({
+        code: "custom",
+        message: `${label} must start with +1 and contain only digits`,
+      });
+    } else if (phone.country !== "CA" || !phone.isValid()) {
+      ctx.addIssue({
+        code: "custom",
+        message: `${label} must be a valid Canadian number`,
+      });
+    }
+  });
