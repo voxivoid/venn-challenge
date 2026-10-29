@@ -2,6 +2,8 @@
 
 The Venn front-end take-home task: a form where users enter their personal and business details (name, Canadian phone number, corporation number). It validates each field on blur, checks the corporation number against the API, and sends the profile to the API on submit.
 
+**Live:** https://andre-venn-challenge.pages.dev
+
 Built with React 19, TypeScript, Vite, react-hook-form, zod, TanStack Query and Tailwind with shadcn components.
 
 ## Quick start
