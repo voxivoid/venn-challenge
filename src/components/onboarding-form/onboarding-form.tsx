@@ -1,6 +1,9 @@
 import type { SubmitEventHandler } from "react";
 import { ArrowRight, CircleCheck } from "lucide-react";
-import { FormField, type FormFieldControl } from "@/components/form-field";
+import {
+  FormField,
+  type FormFieldControl,
+} from "@/components/form-field/form-field";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldError, FieldGroup } from "@/components/ui/field";

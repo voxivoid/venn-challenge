@@ -1,4 +1,4 @@
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import {
   corporationNumberHandler,
@@ -15,12 +15,13 @@ import { server } from "@/test/server";
 
 const field = (name: string) => screen.getByRole("textbox", { name });
 
-it("renders the onboarding form at / inside the step shell", () => {
+it("renders the onboarding form at / inside the default layout", () => {
   renderRoute("/");
+  const main = within(screen.getByRole("main"));
 
-  expect(screen.getByText("Step 1 of 5")).toBeInTheDocument();
+  expect(main.getByText("Step 1 of 5")).toBeInTheDocument();
   expect(
-    screen.getByRole("heading", { name: "Onboarding Form" }),
+    main.getByRole("heading", { name: "Onboarding Form" }),
   ).toBeInTheDocument();
 });
 

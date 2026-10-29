@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { ApiError } from "@/api/api-error";
 import { useCheckCorporationNumberQuery } from "@/api/corporation-number";
-import type { FormFieldControl } from "@/components/form-field";
+import type { FormFieldControl } from "@/components/form-field/form-field";
 import type { InputStatus } from "@/components/ui/input";
 import type { OnboardingFormProps } from "./onboarding-form";
 import {
