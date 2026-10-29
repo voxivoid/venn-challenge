@@ -1,9 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useCheckCorporationNumber } from "@/api/corporation-number";
 import type { FormFieldControl } from "@/components/form-field";
 import type { OnboardingFormProps } from "./onboarding-form";
 import {
-  onboardingFormSchema,
+  createOnboardingFormSchema,
   type OnboardingFormField,
   type OnboardingFormValues,
 } from "./onboarding-form.schema";
@@ -20,12 +21,18 @@ type UseOnboardingFormOptions = {
   onSubmit?: (values: OnboardingFormValues) => void | Promise<void>;
 };
 
-/** Wires the onboarding form: validates on blur, and on submit before calling `onSubmit`. */
+/**
+ * Wires the onboarding form: validates on blur (including the remote corporation
+ * number check), and on submit before calling `onSubmit`.
+ */
 export function useOnboardingForm({
   onSubmit,
 }: UseOnboardingFormOptions = {}): OnboardingFormProps {
+  const checkCorporationNumber = useCheckCorporationNumber();
   const form = useForm<OnboardingFormValues>({
-    resolver: zodResolver(onboardingFormSchema),
+    resolver: zodResolver(
+      createOnboardingFormSchema({ checkCorporationNumber }),
+    ),
     mode: "onBlur",
     reValidateMode: "onBlur",
     defaultValues: emptyValues,

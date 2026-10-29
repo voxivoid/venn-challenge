@@ -1,6 +1,11 @@
-import { screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { screen, waitFor } from "@testing-library/react";
+import { describe, expect, it, onTestFinished } from "vitest";
+import {
+  corporationNumberHandler,
+  invalidCorporationNumberReply,
+} from "@/api/corporation-number/corporation-number.handlers";
 import { renderRoute } from "@/test/render";
+import { server } from "@/test/server";
 
 const field = (name: string) => screen.getByRole("textbox", { name });
 
@@ -46,6 +51,7 @@ it("does not validate while typing, only on blur", async () => {
 });
 
 it("clears an error once the field is fixed and blurred again", async () => {
+  server.use(corporationNumberHandler());
   const { user } = renderRoute("/");
 
   await user.type(field("Corporation Number"), "1234");
@@ -56,7 +62,7 @@ it("clears an error once the field is fixed and blurred again", async () => {
 
   await user.type(field("Corporation Number"), "56789");
   await user.tab();
-  expect(field("Corporation Number")).toBeValid();
+  await waitFor(() => expect(field("Corporation Number")).toBeValid());
 });
 
 it("rejects a valid but non-Canadian phone number", async () => {
@@ -151,4 +157,124 @@ describe("character limits", () => {
       );
     },
   );
+});
+
+describe("corporation number check", () => {
+  const corporationNumber = () => field("Corporation Number");
+
+  /** Paths of every request the page sends from now on. */
+  function recordRequests() {
+    const paths: string[] = [];
+    const record = ({ request }: { request: Request }) => {
+      paths.push(new URL(request.url).pathname);
+    };
+    server.events.on("request:start", record);
+    onTestFinished(() => server.events.removeListener("request:start", record));
+    return paths;
+  }
+
+  async function blurWith(value: string) {
+    const { user } = renderRoute("/");
+    await user.type(corporationNumber(), value);
+    await user.tab();
+    return user;
+  }
+
+  it("accepts a number the API knows", async () => {
+    server.use(corporationNumberHandler());
+    const requested = recordRequests();
+
+    await blurWith("826417395");
+
+    await waitFor(() =>
+      expect(requested).toEqual(["/corporation-number/826417395"]),
+    );
+    expect(corporationNumber()).toBeValid();
+  });
+
+  it("shows the API message for an unknown number", async () => {
+    server.use(
+      corporationNumberHandler({ reply: invalidCorporationNumberReply }),
+    );
+
+    await blurWith("111111111");
+
+    await waitFor(() =>
+      expect(corporationNumber()).toHaveAccessibleDescription(
+        "Invalid corporation number",
+      ),
+    );
+  });
+
+  it.each([
+    [
+      "a server error",
+      { reply: { status: 500, body: { message: "Internal error" } } },
+    ],
+    ["a network failure", { networkError: true }],
+  ] as const)("asks the user to retry after %s", async (_, options) => {
+    server.use(corporationNumberHandler(options));
+
+    await blurWith("826417395");
+
+    await waitFor(() =>
+      expect(corporationNumber()).toHaveAccessibleDescription(
+        "Corporation number could not be verified, please try again",
+      ),
+    );
+  });
+
+  it("retries a failed check on the next blur", async () => {
+    server.use(
+      corporationNumberHandler({
+        reply: { status: 500, body: { message: "Internal error" } },
+      }),
+    );
+    const user = await blurWith("826417395");
+    await waitFor(() => expect(corporationNumber()).toBeInvalid());
+
+    server.use(corporationNumberHandler());
+    await user.click(corporationNumber());
+    await user.tab();
+
+    await waitFor(() => expect(corporationNumber()).toBeValid());
+  });
+
+  it("asks the API once per number, however often the form validates", async () => {
+    server.use(corporationNumberHandler());
+    const requested = recordRequests();
+    const user = await blurWith("826417395");
+    await waitFor(() => expect(requested).toHaveLength(1));
+
+    // Blurring again, or blurring another field, re-runs the whole schema.
+    await user.click(corporationNumber());
+    await user.tab();
+    await user.click(field("First Name"));
+    await user.tab();
+
+    expect(requested).toEqual(["/corporation-number/826417395"]);
+  });
+
+  it("checks a changed number again instead of reusing the old answer", async () => {
+    server.use(
+      corporationNumberHandler({
+        reply: ({ params }) =>
+          params.number === "111111111"
+            ? invalidCorporationNumberReply
+            : { body: { corporationNumber: "826417395", valid: true } },
+      }),
+    );
+    const user = await blurWith("826417395");
+    await waitFor(() => expect(corporationNumber()).toBeValid());
+
+    await user.clear(corporationNumber());
+    await user.type(corporationNumber(), "111111111");
+    await user.tab();
+
+    await waitFor(() =>
+      expect(corporationNumber()).toHaveAccessibleDescription(
+        "Invalid corporation number",
+      ),
+    );
+  });
 });
