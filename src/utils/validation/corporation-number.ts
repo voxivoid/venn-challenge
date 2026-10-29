@@ -1,3 +1,4 @@
+import type { CorporationNumberCheck } from "@/api/corporation-number";
 import { requiredText } from "./required-text";
 
 const CORPORATION_NUMBER_LENGTH = 9;
@@ -5,14 +6,6 @@ const CORPORATION_NUMBER_LENGTH = 9;
 const CORPORATION_NUMBER_FORMAT = new RegExp(
   `^\\d{${CORPORATION_NUMBER_LENGTH}}$`,
 );
-
-export type CorporationNumberCheckResult =
-  { valid: true } | { valid: false; message: string };
-
-/** Asks an authority (e.g. the API) whether a well-formed number exists. */
-export type CorporationNumberCheck = (
-  value: string,
-) => Promise<CorporationNumberCheckResult>;
 
 /**
  * A 9-digit corporation number. With `check`, a well-formed number is also

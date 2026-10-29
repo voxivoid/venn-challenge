@@ -1,19 +1,18 @@
 import { queryOptions, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
-import type { CorporationNumberCheck } from "@/utils/validation";
 import { apiUrl } from "../api-url";
+import type {
+  CorporationNumberCheck,
+  CorporationNumberResponse,
+} from "./types";
 
 /** Shared by the request and its MSW handler, so they cannot drift apart. */
 export const CORPORATION_NUMBER_PATH = "/corporation-number/:number";
 
-const corporationNumberResponse = z.discriminatedUnion("valid", [
+export const corporationNumberResponse = z.discriminatedUnion("valid", [
   z.object({ valid: z.literal(true), corporationNumber: z.string() }),
   z.object({ valid: z.literal(false), message: z.string() }),
 ]);
-
-export type CorporationNumberResponse = z.infer<
-  typeof corporationNumberResponse
->;
 
 /** GET /corporation-number/:number. 404 means "does not exist", not a failure. */
 export async function getCorporationNumber(

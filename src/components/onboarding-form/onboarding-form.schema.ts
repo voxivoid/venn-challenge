@@ -3,8 +3,8 @@ import {
   canadianPhone,
   corporationNumber,
   personName,
-  type CorporationNumberCheck,
 } from "@/utils/validation";
+import type { CorporationNumberCheck } from "@/api/corporation-number";
 
 type OnboardingFormSchemaOptions = {
   /** Verifies a well-formed corporation number remotely; skipped when omitted. */

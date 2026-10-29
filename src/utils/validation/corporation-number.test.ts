@@ -1,8 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import {
-  corporationNumber,
-  type CorporationNumberCheck,
-} from "./corporation-number";
+import type { CorporationNumberCheck } from "@/api/corporation-number";
+import { corporationNumber } from "./corporation-number";
 
 const schema = corporationNumber("Corporation number");
 const messages = (value: string) =>

@@ -1,8 +1,6 @@
 import { createMockHandler, type MockReply } from "@/test/msw";
-import {
-  CORPORATION_NUMBER_PATH,
-  type CorporationNumberResponse,
-} from "./corporation-number";
+import { CORPORATION_NUMBER_PATH } from "./corporation-number";
+import type { CorporationNumberResponse } from "./types";
 
 /** The API's answer for a corporation number that does not exist. */
 export const invalidCorporationNumberReply: MockReply<CorporationNumberResponse> =
