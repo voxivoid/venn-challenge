@@ -1,4 +1,4 @@
-import type { FormEventHandler } from "react";
+import type { SubmitEventHandler } from "react";
 import { ArrowRight, CircleCheck } from "lucide-react";
 import { FormField, type FormFieldControl } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import type { OnboardingFormField } from "./onboarding-form.schema";
 export type OnboardingFormProps = {
   /** Input props and error per field, e.g. from `useOnboardingForm`. */
   fields: Record<OnboardingFormField, FormFieldControl>;
-  onSubmit: FormEventHandler<HTMLFormElement>;
+  onSubmit: SubmitEventHandler<HTMLFormElement>;
   isSubmitting?: boolean;
   /** The last submit went through. */
   isSubmitSuccessful?: boolean;

@@ -68,7 +68,7 @@ it("shows each field error under its field", () => {
 
 it("submits with the keyboard", async () => {
   const user = userEvent.setup();
-  const onSubmit = vi.fn((event: React.FormEvent) => event.preventDefault());
+  const onSubmit = vi.fn((event: React.SubmitEvent) => event.preventDefault());
   renderForm({ onSubmit });
 
   await user.type(field("First Name"), "{Enter}");
