@@ -1,10 +1,28 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { fn } from "storybook/test";
+import { inputStatusArgType } from "@/test/storybook";
 import { FormField } from "./form-field";
 
 const meta = {
   title: "Components/FormField",
   component: FormField,
-  args: { label: "Corporation Number" },
+  args: {
+    label: "Corporation Number",
+    error: "",
+    required: false,
+    disabled: false,
+    placeholder: "",
+    onChange: fn(),
+    onBlur: fn(),
+  },
+  argTypes: {
+    label: { control: "text" },
+    error: { control: "text", description: "Empty for no error." },
+    required: { control: "boolean" },
+    disabled: { control: "boolean" },
+    placeholder: { control: "text" },
+    status: inputStatusArgType,
+  },
   decorators: [
     (Story) => (
       <div className="w-96 p-6">

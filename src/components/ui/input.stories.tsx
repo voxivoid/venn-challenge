@@ -1,14 +1,28 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { fn } from "storybook/test";
+import { inputStatusArgType } from "@/test/storybook";
 import { Input } from "./input";
 
 const meta = {
   title: "UI/Input",
   component: Input,
-  args: { "aria-label": "Example input" },
+  args: {
+    "aria-label": "Example input",
+    "aria-invalid": false,
+    disabled: false,
+    placeholder: "",
+    type: "text",
+    onChange: fn(),
+    onBlur: fn(),
+  },
   argTypes: {
-    status: {
+    status: inputStatusArgType,
+    "aria-invalid": { control: "boolean" },
+    disabled: { control: "boolean" },
+    placeholder: { control: "text" },
+    type: {
       control: "select",
-      options: [undefined, "loading", "valid", "invalid"],
+      options: ["text", "tel", "email", "password", "number"],
     },
   },
 } satisfies Meta<typeof Input>;
@@ -18,6 +32,9 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 export const Invalid: Story = { args: { "aria-invalid": true } };
+export const Disabled: Story = {
+  args: { disabled: true, defaultValue: "826417395" },
+};
 
 export const Loading: Story = {
   args: { status: "loading", defaultValue: "826417395" },

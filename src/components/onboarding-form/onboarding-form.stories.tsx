@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { fn } from "storybook/test";
 import { OnboardingForm } from "./onboarding-form";
 
 const emptyFields = {
@@ -13,7 +14,16 @@ const meta = {
   component: OnboardingForm,
   args: {
     fields: emptyFields,
-    onSubmit: (event) => event.preventDefault(),
+    // Logged in the Actions panel; no page reload.
+    onSubmit: fn((event) => event.preventDefault()),
+    isSubmitting: false,
+    isSubmitSuccessful: false,
+    submitError: "",
+  },
+  argTypes: {
+    isSubmitting: { control: "boolean" },
+    isSubmitSuccessful: { control: "boolean" },
+    submitError: { control: "text", description: "Empty for no error." },
   },
   decorators: [
     (Story) => (

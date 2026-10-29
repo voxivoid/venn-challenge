@@ -5,6 +5,7 @@ const meta = {
   title: "UI/Label",
   component: Label,
   args: { children: "First Name" },
+  argTypes: { children: { control: "text" } },
 } satisfies Meta<typeof Label>;
 
 export default meta;
