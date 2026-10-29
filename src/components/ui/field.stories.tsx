@@ -1,10 +1,46 @@
+import type { ComponentProps } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Input } from "./input";
-import { Field, FieldError, FieldGroup, FieldLabel } from "./field";
+import { inputStatusArgType } from "@/test/storybook";
+import { Input, type InputStatus } from "./input";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "./field";
+
+/** `Field` props plus its label, description, error and input, all editable from the controls. */
+type FieldStoryArgs = ComponentProps<typeof Field> & {
+  label: string;
+  description: string;
+  error: string;
+  disabled: boolean;
+  status?: InputStatus;
+};
 
 const meta = {
   title: "UI/Field",
   component: Field,
+  args: {
+    orientation: "vertical",
+    label: "Corporation Number",
+    description: "",
+    error: "",
+    disabled: false,
+    status: undefined,
+  },
+  argTypes: {
+    orientation: {
+      control: "inline-radio",
+      options: ["vertical", "horizontal", "responsive"],
+    },
+    label: { control: "text" },
+    description: { control: "text" },
+    error: { control: "text", description: "Empty for no error." },
+    disabled: { control: "boolean" },
+    status: inputStatusArgType,
+  },
   decorators: [
     (Story) => (
       <div className="w-80">
@@ -12,28 +48,32 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof Field>;
+  render: ({ label, description, error, disabled, status, ...args }) => (
+    <Field {...args} data-invalid={!!error}>
+      <FieldLabel htmlFor="field">{label}</FieldLabel>
+      <Input
+        id="field"
+        disabled={disabled}
+        status={status}
+        aria-invalid={!!error}
+      />
+      {description && <FieldDescription>{description}</FieldDescription>}
+      {error && <FieldError>{error}</FieldError>}
+    </Field>
+  ),
+} satisfies Meta<FieldStoryArgs>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  render: (args) => (
-    <Field {...args}>
-      <FieldLabel htmlFor="name">Name</FieldLabel>
-      <Input id="name" />
-    </Field>
-  ),
+export const Default: Story = {};
+
+export const WithDescription: Story = {
+  args: { description: "9 digits, as on your registration." },
 };
 
 export const WithError: Story = {
-  render: (args) => (
-    <Field {...args} data-invalid>
-      <FieldLabel htmlFor="corp">Corporation Number</FieldLabel>
-      <Input id="corp" aria-invalid />
-      <FieldError>Invalid Corporation Number</FieldError>
-    </Field>
-  ),
+  args: { error: "Invalid Corporation Number" },
 };
 
 export const Group: Story = {

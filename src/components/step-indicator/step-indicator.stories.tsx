@@ -5,6 +5,10 @@ const meta = {
   title: "Components/StepIndicator",
   component: StepIndicator,
   args: { step: 1, totalSteps: 5 },
+  argTypes: {
+    step: { control: { type: "number", min: 1, step: 1 } },
+    totalSteps: { control: { type: "number", min: 1, step: 1 } },
+  },
 } satisfies Meta<typeof StepIndicator>;
 
 export default meta;
